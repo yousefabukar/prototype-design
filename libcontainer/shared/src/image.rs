@@ -16,7 +16,6 @@ pub struct ImageManifest {
 
 #[derive(Serialize, Deserialize)]
 pub struct TestManifest {
-    pub output: String,
     pub tests: Vec<TestOutput>,
 }
 
