@@ -9,7 +9,7 @@ pub struct ImageOptions {
 
 #[derive(Serialize, Deserialize)]
 pub struct ImageManifest {
-    pub extraction_path: PathBuf,
+    pub extraction_dir: PathBuf,
     pub test_script: PathBuf,
     pub test_manifest: PathBuf,
 }
