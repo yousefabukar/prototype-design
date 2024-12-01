@@ -1,0 +1,7 @@
+[package]
+name = "shared"
+description = "Shared objects for libcontainer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]

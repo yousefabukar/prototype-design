@@ -4,11 +4,13 @@
 This is the custom container engine used by the automatic code testing system.
 
 ## Structure of the engine
-The engine is split into two main components: `daemon` and `bridge`.
+The engine is split into two three components: `daemon`, `bridge` and `shared`.
 
 `daemon` is a root daemon which handles the management of containers and running of tests. `daemon` must be run as root as it utilises `systemd-nspawn` internally, which must also be run as root. `daemon` will initialise and run the container and execute the tests, before returning any output.
 
 `bridge` is the Node.js bridge which allows the server to communicate with `libcontainer`. Internally, `daemon` will start and listen on a `dbus` service, which `bridge` will connect to and communicate over. Javascript bindings to `bridge` are made available with [neon](https://neon-rs.dev/). `bridge` is also responsible for other utility functions, such as ensuring an image file is valid before passing it to `daemon`.
+
+As the name may suggest, `shared` is merely for holding shared internal structures between `daemon` and `bridge`.
 
 
 ## Documentation
