@@ -8,7 +8,7 @@ pub struct ImageOptions {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct InternalImage {
+pub struct ImageManifest {
     pub extraction_path: PathBuf,
     pub test_script: PathBuf,
     pub test_manifest: PathBuf,

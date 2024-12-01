@@ -5,5 +5,9 @@ pub enum EngineError {
     #[error("Failed to convert path to string")]
     PathStr,
     #[error("Failed to spawn container runtime")]
-    SpawnFailure(#[from] tokio::io::Error),
+    SpawnFailure,
+    #[error("Failed to read file - image is likely invalid")]
+    FileNotFound,
+    #[error("Failed to parse manifest file")]
+    Parse(#[from] serde_json::Error)
 }
