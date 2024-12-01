@@ -22,6 +22,6 @@ pub struct TestManifest {
 
 #[derive(Serialize, Deserialize)]
 pub struct TestOutput {
-    pub total_marks: usize,
-    pub final_marks: usize,
+    pub passed: bool,
+    pub weight: usize,
 }
