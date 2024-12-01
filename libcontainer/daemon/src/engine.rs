@@ -1,4 +1,5 @@
 use crate::error::EngineError;
+use crate::sys::SchedulerIface;
 use shared::image::{ImageManifest, ImageOptions};
 use std::path::PathBuf;
 use tokio::fs;
@@ -16,6 +17,8 @@ impl ContainerEngine {
                 .map_err(|_| EngineError::FileNotFound)?,
         )?;
 
+        SchedulerIface::set_max_mem(opts.mem)?;
+
         let proc = Command::new("systemd-nspawn")
             .args([
                 "-D",
@@ -24,6 +27,8 @@ impl ContainerEngine {
             ])
             .spawn()
             .map_err(|_| EngineError::SpawnFailure)?;
+
+        SchedulerIface::set_max_cpus(proc.id().ok_or(EngineError::SpawnFailure)?, opts.cpus)?;
 
         Ok(ContainerEngine { proc })
     }

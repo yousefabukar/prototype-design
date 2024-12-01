@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 pub struct ImageOptions {
     pub cpus: u8,
-    pub mem: usize,
+    pub mem: u64,
     pub manifest_path: PathBuf,
 }
 

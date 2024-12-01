@@ -9,5 +9,7 @@ pub enum EngineError {
     #[error("Failed to read file - image is likely invalid")]
     FileNotFound,
     #[error("Failed to parse manifest file")]
-    Parse(#[from] serde_json::Error)
+    Parse(#[from] serde_json::Error),
+    #[error("Error in system call")]
+    NixSys(#[from] nix::Error),
 }
