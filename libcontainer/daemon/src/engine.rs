@@ -20,12 +20,12 @@ impl ContainerEngine {
             .args([
                 "-D",
                 img_path.to_str().ok_or(EngineError::PathStr)?,
-                opts.manifest_path.to_str().ok_or(EngineError::PathStr)?,
+                manifest.test_script.to_str().ok_or(EngineError::PathStr)?,
             ])
             .spawn()
-            .map_err(|_| EngineError::SpawnFailure);
+            .map_err(|_| EngineError::SpawnFailure)?;
 
-        todo!()
+        Ok(ContainerEngine { proc })
     }
 
     pub fn is_finished(&self) -> bool {
