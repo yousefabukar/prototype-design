@@ -1,6 +1,7 @@
 use shared::error::ServiceError;
-use std::sync::{Mutex, MutexGuard, OnceLock};
+use std::sync::OnceLock;
 use thiserror::Error;
+use tokio::sync::{Mutex, MutexGuard};
 
 #[derive(Debug, Error)]
 pub enum EngineError {
@@ -21,15 +22,17 @@ pub enum EngineError {
 }
 
 pub trait LockExt<T> {
-    fn try_get(&self) -> Result<MutexGuard<T>, EngineError>;
+    async fn try_get<'a>(&'a self) -> Result<MutexGuard<'a, T>, EngineError>
+    where
+        T: 'a;
 }
 
 impl<T> LockExt<T> for OnceLock<Mutex<T>> {
-    fn try_get(&self) -> Result<MutexGuard<T>, EngineError> {
-        self.get()
-            .ok_or(EngineError::SyncError)?
-            .lock()
-            .map_err(|_| EngineError::SyncError)
+    async fn try_get<'a>(&'a self) -> Result<MutexGuard<'a, T>, EngineError>
+    where
+        T: 'a,
+    {
+        Ok(self.get().ok_or(EngineError::SyncError)?.lock().await)
     }
 }
 
