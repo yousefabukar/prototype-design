@@ -2,6 +2,7 @@ use crate::error::EngineError;
 use crate::sys::SchedulerIface;
 use shared::image::{ImageManifest, ImageOptions, TestManifest};
 use std::path::PathBuf;
+use std::process::Stdio;
 use tokio::fs;
 use tokio::process::{Child, Command};
 
@@ -41,6 +42,7 @@ impl ContainerEngine {
                 img_path.to_str().ok_or(EngineError::PathStr)?,
                 manifest.test_script.to_str().ok_or(EngineError::PathStr)?,
             ])
+            .stdout(Stdio::piped())
             .spawn()
             .map_err(|_| EngineError::SpawnFailure)?;
 
