@@ -1,3 +1,4 @@
+use std::sync::{Mutex, MutexGuard, OnceLock};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -14,4 +15,19 @@ pub enum EngineError {
     NixSys(#[from] nix::Error),
     #[error("An error occurred in the runtime process: {0}")]
     Runtime(&'static str),
+    #[error("Failed to synchronise running containers")]
+    SyncError,
+}
+
+pub trait LockExt<T> {
+    fn try_get(&self) -> Result<MutexGuard<T>, EngineError>;
+}
+
+impl<T> LockExt<T> for OnceLock<Mutex<T>> {
+    fn try_get(&self) -> Result<MutexGuard<T>, EngineError> {
+        self.get()
+            .ok_or(EngineError::SyncError)?
+            .lock()
+            .map_err(|_| EngineError::SyncError)
+    }
 }
