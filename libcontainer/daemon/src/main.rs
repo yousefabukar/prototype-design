@@ -11,6 +11,15 @@ use zbus::connection::Builder;
 
 #[tokio::main]
 async fn main() {
+    if !Uid::current().is_root() {
+        panic!(
+            "The libcontainer daemon has not been run as root. \
+            Please run the daemon with root permissions and then try again.
+For more information, please see https://github.com/yousefabukar/prototype-design/tree/main\
+    /libcontainer#structure-of-the-engine"
+        )
+    }
+
     let runtime = ContainerManager::new().expect("Failed to initialise the container runtime");
 
     async {
