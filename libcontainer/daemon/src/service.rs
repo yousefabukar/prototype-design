@@ -16,10 +16,11 @@ static CONTAINERS: OnceLock<Mutex<HashMap<Uuid, ContainerEngine>>> = OnceLock::n
 pub struct ContainerManager;
 
 impl ContainerManager {
-    pub fn init() -> Result<(), EngineError> {
+    pub fn new() -> Result<Self, EngineError> {
         CONTAINERS
             .set(Mutex::new(HashMap::new()))
-            .map_err(|_| EngineError::SyncError)
+            .map_err(|_| EngineError::SyncError)?;
+        Ok(ContainerManager)
     }
 }
 
