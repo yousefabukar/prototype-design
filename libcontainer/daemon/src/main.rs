@@ -5,6 +5,7 @@ mod error;
 mod service;
 mod sys;
 
+use nix::unistd::{self, Uid};
 use service::ContainerManager;
 use std::future::pending;
 use zbus::connection::Builder;
@@ -22,8 +23,10 @@ For more information, please see https://github.com/yousefabukar/prototype-desig
 
     let runtime = ContainerManager::new().expect("Failed to initialise the container runtime");
 
+    unistd::seteuid(Uid::from_raw(1000)).expect("Failed to set local user permissions");
+
     async {
-        let _conn = Builder::session()?
+        let _conn = Builder::address("unix:path=/run/user/1000/bus")?
             .name("libcontainer.daemon")?
             .serve_at("/libcontainer/daemon", runtime)?
             .build()
