@@ -6,4 +6,6 @@ pub enum ServiceError {
     #[zbus(error)]
     Service(zbus::Error),
     Engine(String),
+    IdParse,
+    InvalidId,
 }
