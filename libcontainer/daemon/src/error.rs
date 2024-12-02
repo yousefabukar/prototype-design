@@ -1,3 +1,4 @@
+use shared::error::ServiceError;
 use std::sync::{Mutex, MutexGuard, OnceLock};
 use thiserror::Error;
 
@@ -29,5 +30,11 @@ impl<T> LockExt<T> for OnceLock<Mutex<T>> {
             .ok_or(EngineError::SyncError)?
             .lock()
             .map_err(|_| EngineError::SyncError)
+    }
+}
+
+impl From<EngineError> for ServiceError {
+    fn from(value: EngineError) -> Self {
+        ServiceError::Engine(value.to_string())
     }
 }
