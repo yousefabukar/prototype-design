@@ -5,6 +5,20 @@ use std::path::PathBuf;
 use tokio::fs;
 use tokio::process::{Child, Command};
 
+macro_rules! join_img_abs {
+    ($img_path: expr, $target: expr) => {{
+        let target = if $target.has_root() {
+            let mut iter = $target.components();
+            iter.next();
+            PathBuf::from_iter(iter)
+        } else {
+            $target
+        };
+
+        $img_path.join(target)
+    }};
+}
+
 pub struct ContainerEngine {
     proc: Option<Child>,
     img_path: PathBuf,
@@ -14,7 +28,7 @@ pub struct ContainerEngine {
 impl ContainerEngine {
     pub async fn new(opts: ImageOptions, img_path: PathBuf) -> Result<Self, EngineError> {
         let manifest: ImageManifest = serde_json::from_slice(
-            &fs::read(&opts.manifest_path)
+            &fs::read(join_img_abs!(img_path, opts.manifest_path))
                 .await
                 .map_err(|_| EngineError::FileNotFound)?,
         )?;
@@ -66,7 +80,7 @@ impl ContainerEngine {
             }
         }
 
-        let path = self.img_path.join(&self.manifest.test_manifest);
+        let path = join_img_abs!(self.img_path, self.manifest.test_manifest);
 
         Ok(serde_json::from_slice(
             &fs::read(path)
