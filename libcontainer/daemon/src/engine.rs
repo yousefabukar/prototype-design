@@ -71,7 +71,7 @@ impl ContainerEngine {
         .to_string())
     }
 
-    pub async fn test_output(&self) -> Result<TestManifest, EngineError> {
+    pub async fn test_output(self) -> Result<TestManifest, EngineError> {
         if let Some(proc) = self.proc.as_ref() {
             if proc.id().is_some() {
                 return Err(EngineError::Runtime(
