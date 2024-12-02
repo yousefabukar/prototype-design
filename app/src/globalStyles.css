@@ -1,39 +1,62 @@
-.container {
-    margin: 30px;
-    font-family: Arial, sans-serif;
-}
-
-
-.page-header {
-    margin-bottom: 20px;
-}
-
-.data-table {
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 20px 40px;
+ }
+ 
+ table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.data-table th {
-    background-color: #f2f2f2;
-    padding: 12px;
+ }
+ 
+ th, td {
+    border: 1px solid black;
+    padding: 8px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.data-table td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-}
-
-.primary-button {
+ }
+ 
+ /* Form layout */
+ .form-container {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+ }
+ 
+ .form-column {
+    width: 50%;
+ }
+ 
+ .form-group {
+    margin-bottom: 20px;
+ }
+ 
+ label {
+    display: block;
+    margin-bottom: 8px;
+ }
+ 
+ input[type="text"], 
+ input[type="date"] {
+    width: 90%;
+    padding: 8px;
+    height: 25px;
+ }
+ 
+ input[type="file"] {
+    width: 90%;
+    padding: 5px;
+ }
+ 
+ select {
+    width: 100px;
+    padding: 5px;
+    height: 35px;
+ }
+ 
+ button {
+    margin: 5px;
     padding: 8px 15px;
-    margin: 10px 0;
-    cursor: pointer;
-}
-
-.action-button {
-    padding: 5px 10px;
-    margin-right: 5px;
-    cursor: pointer;
-}
+ }
+ 
+ h1, h2 {
+    margin-bottom: 20px;
+ }
