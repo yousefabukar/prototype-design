@@ -6,7 +6,7 @@ use tokio::fs;
 use tokio::process::{Child, Command};
 
 pub struct ContainerEngine {
-    proc: Child,
+    proc: Option<Child>,
     img_path: PathBuf,
     manifest: ImageManifest,
 }
@@ -33,17 +33,39 @@ impl ContainerEngine {
         SchedulerIface::set_max_cpus(proc.id().ok_or(EngineError::SpawnFailure)?, opts.cpus)?;
 
         Ok(ContainerEngine {
-            proc,
+            proc: Some(proc),
             img_path,
             manifest,
         })
     }
 
-    pub fn is_finished(&self) -> bool {
-        self.proc.id().is_none()
+    pub async fn wait_for_completion(&mut self) -> Result<String, EngineError> {
+        Ok(String::from_utf8_lossy(
+            &self
+                .proc
+                .take()
+                .ok_or(EngineError::Runtime(
+                    "Process is not available. Did you run the same function twice?",
+                ))?
+                .wait_with_output()
+                .await
+                .map_err(|_| {
+                    EngineError::Runtime("Failed to read standard output from subprecess")
+                })?
+                .stdout,
+        )
+        .to_string())
     }
 
     pub async fn test_output(&self) -> Result<TestManifest, EngineError> {
+        if let Some(proc) = self.proc.as_ref() {
+            if proc.id().is_some() {
+                return Err(EngineError::Runtime(
+                    "Attempted to get the test output while the process is still running.",
+                ));
+            }
+        }
+
         let path = self.img_path.join(&self.manifest.test_manifest);
 
         Ok(serde_json::from_slice(

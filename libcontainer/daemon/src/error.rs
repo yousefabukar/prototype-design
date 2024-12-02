@@ -12,4 +12,6 @@ pub enum EngineError {
     Parse(#[from] serde_json::Error),
     #[error("Error in system call")]
     NixSys(#[from] nix::Error),
+    #[error("An error occurred in the runtime process: {0}")]
+    Runtime(&'static str),
 }
