@@ -29,8 +29,13 @@ For more information, please see https://github.com/yousefabukar/prototype-desig
             .build()
             .await?;
 
-        println!("The libcontainer daemon dbus service is now running at /libcontainer/daemon (libcontainer.daemon).
-You may now use libcontainer bridge.");
+        println!(
+            "The libcontainer daemon dbus service is now running at\
+            /libcontainer/daemon (libcontainer.daemon).
+You may now use libcontainer bridge."
+        );
+
+        unistd::seteuid(Uid::from_raw(0)).expect("Failed to switch back to root permissions");
 
         pending::<()>().await;
 
