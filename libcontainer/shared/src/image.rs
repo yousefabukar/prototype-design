@@ -15,11 +15,6 @@ pub struct ImageManifest {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct TestManifest {
-    pub tests: Vec<TestOutput>,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct TestOutput {
     pub passed: bool,
     pub weight: usize,

@@ -1,6 +1,6 @@
 use crate::error::EngineError;
 use crate::sys::SchedulerIface;
-use shared::image::{ImageManifest, ImageOptions, TestManifest};
+use shared::image::{ImageManifest, ImageOptions, TestOutput};
 use std::path::PathBuf;
 use std::process::Stdio;
 use tokio::fs;
@@ -73,7 +73,7 @@ impl ContainerEngine {
         .to_string())
     }
 
-    pub async fn test_output(self) -> Result<TestManifest, EngineError> {
+    pub async fn test_output(self) -> Result<Vec<TestOutput>, EngineError> {
         if let Some(proc) = self.proc.as_ref() {
             if proc.id().is_some() {
                 return Err(EngineError::Runtime(
