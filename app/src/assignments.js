@@ -1,5 +1,5 @@
 // Dummy data in a static array for the storage of the assignment.
-// separate .js file for simplicity
+// temporarilyseparate .js file for simplicity
 
 let assignments = [
     {

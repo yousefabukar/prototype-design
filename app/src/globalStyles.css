@@ -1,53 +1,62 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f5f5f5;
-}
-
-div {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-h1 {
-    color: #d4fef2;
-    margin-bottom: 20px;
-}
-
-table {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 20px 40px;
+ }
+ 
+ table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th {
-    background-color: #f2f2f2;
-    padding: 12px;
+ }
+ 
+ th, td {
+    border: 1px solid black;
+    padding: 8px;
     text-align: left;
-    border: 1px solid #ddd;
-}
-
-td {
-    padding: 12px;
-    border: 1px solid #ddd;
-}
-
-tr:hover {
-    background-color: #f9f9f9;
-}
-
-button {
-    padding: 8px 16px;
+ }
+ 
+ /* Form layout */
+ .form-container {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+ }
+ 
+ .form-column {
+    width: 50%;
+ }
+ 
+ .form-group {
+    margin-bottom: 20px;
+ }
+ 
+ label {
+    display: block;
+    margin-bottom: 8px;
+ }
+ 
+ input[type="text"], 
+ input[type="date"] {
+    width: 90%;
+    padding: 8px;
+    height: 25px;
+ }
+ 
+ input[type="file"] {
+    width: 90%;
+    padding: 5px;
+ }
+ 
+ select {
+    width: 100px;
+    padding: 5px;
+    height: 35px;
+ }
+ 
+ button {
     margin: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #f0f0f0;
-}
+    padding: 8px 15px;
+ }
+ 
+ h1, h2 {
+    margin-bottom: 20px;
+ }

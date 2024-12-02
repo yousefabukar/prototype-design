@@ -1,19 +1,28 @@
+import { useState } from 'react';
 import './globalStyles.css';
-import assignments from './assignments.js'
+import assignments from './assignments.js';
+import AddAssignment from './AddAssignments.js';
 
 function ListOfAssignments() {
+
+    const [showAddForm, setShowAddForm] = useState(false);
+
+    if (showAddForm) {
+        return <AddAssignment onCancel={() => setShowAddForm(false)} />;
+    }
+
     return (
         <div>
-          <h1>Assignments - FNCS (Flexible New Code Submission)</h1>
-          <button>Add New Assignment</button>
+            <h1>FNCS (Flexible New Code Submission)</h1>
+            <h2>Assignment List</h2>
+            <button onClick={() => setShowAddForm(true)}>Add New Assignment</button>
+            <div>
           <table>
             <thead>
               <tr>
                 <th>Title</th>
                 <th>Module</th>
                 <th>Due Date</th>
-                <th>Tests Added</th>
-                <th>Skeleton Code</th>
                 <th>Options</th>
               </tr>
             </thead>
@@ -23,10 +32,10 @@ function ListOfAssignments() {
                   <td>{assignment.title}</td>
                   <td>{assignment.module}</td>
                   <td>{assignment.dueDate}</td>
-                  <td>{assignment.hasTests}</td>
-                  <td>{assignment.hasSkeletonCode}</td>
                   <td>
-                    <button>View</button>
+                    <button>View
+                        Submissions
+                    </button>
                     <button>Edit</button>
                   </td>
                 </tr>
@@ -34,6 +43,7 @@ function ListOfAssignments() {
             </tbody>
           </table>
         </div>
+        </div>   
       );
   }
   
