@@ -10,7 +10,7 @@ use tar::Archive;
 use uuid::Uuid;
 
 pub struct ContainerImg {
-    path: PathBuf,
+    pub(super) path: PathBuf,
 }
 
 impl ContainerImg {
