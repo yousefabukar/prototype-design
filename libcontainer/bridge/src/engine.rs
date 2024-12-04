@@ -7,13 +7,9 @@ use shared::{engine::ContainerHandle, image::TestOutput};
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
-use std::sync::OnceLock;
 use tar::Archive;
 use tokio::fs::{self};
 use uuid::Uuid;
-use zbus::Connection;
-
-static DBUS_CONN: OnceLock<Connection> = OnceLock::new();
 
 pub struct ContainerEngine {
     handle: ContainerHandle,
@@ -83,7 +79,7 @@ impl ContainerEngine {
                 .await
                 .map_err(|_| ContainerError::FileNotFound)?;
         }
-        
+
         Ok(())
     }
 }

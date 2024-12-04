@@ -1,4 +1,3 @@
-use super::MANIFEST_URI;
 use crate::error::ContainerError;
 use flate2::read::GzDecoder;
 use shared::image::ImageManifest;
@@ -8,6 +7,8 @@ use std::fs::{self, File};
 use std::path::PathBuf;
 use tar::Archive;
 use uuid::Uuid;
+
+const MANIFEST_URI: &str = "/root/manifest.json";
 
 pub struct ContainerImg {
     pub(super) path: PathBuf,

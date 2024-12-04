@@ -7,8 +7,6 @@ mod service;
 
 use neon::prelude::*;
 
-const MANIFEST_URI: &str = "/root/manifest.json";
-
 fn hello(mut cx: FunctionContext) -> JsResult<JsString> {
     Ok(cx.string("hello node"))
 }
