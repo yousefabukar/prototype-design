@@ -320,6 +320,7 @@ version = "0.1.0"
 dependencies = [
  "flate2",
  "neon",
+ "serde_json",
  "shared",
  "tar",
  "thiserror",
