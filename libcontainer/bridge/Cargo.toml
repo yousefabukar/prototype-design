@@ -12,10 +12,11 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+flate2 = "1.0.35"
 neon = "1"
 shared = { path = "../shared" }
+tar = "0.4.43"
 thiserror = "2.0.4"
 tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1.11.0", features = ["v4", "fast-rng"] }
 zbus = { version = "5.1.1", default-features = false, features = ["tokio"] }
-zip = "2.2.1"
