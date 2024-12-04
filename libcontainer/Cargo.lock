@@ -288,6 +288,8 @@ name = "libcontainer-bridge"
 version = "0.1.0"
 dependencies = [
  "neon",
+ "shared",
+ "zbus",
 ]
 
 [[package]]
