@@ -26,7 +26,7 @@ impl ContainerImg {
 
         let mut archive = Archive::new(decoder);
         archive
-            .unpack(env::temp_dir().join(&target_dir))
+            .unpack(&target_dir)
             .map_err(|_| ContainerError::ExtractionFailure)?;
 
         self.path = target_dir;

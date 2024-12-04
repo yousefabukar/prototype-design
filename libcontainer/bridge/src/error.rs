@@ -11,4 +11,8 @@ pub enum ContainerError {
     ExtractionFailure,
     #[error("Failed to connect to dbus service: {0}")]
     ConnErr(#[from] zbus::Error),
+    #[error("Attempted to run tests on a submission which hasn't been imported.")]
+    NoSubmission,
+    #[error("Failed to run async task at runtime: {0}")]
+    TokioTask(#[from] tokio::task::JoinError),
 }
