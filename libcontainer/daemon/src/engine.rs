@@ -1,24 +1,11 @@
 use crate::error::EngineError;
 use crate::sys::SchedulerIface;
 use shared::image::{ImageManifest, ImageOptions, TestOutput};
+use shared::join_img_abs;
 use std::path::PathBuf;
 use std::process::Stdio;
 use tokio::fs;
 use tokio::process::{Child, Command};
-
-macro_rules! join_img_abs {
-    ($img_path: expr, $target: expr) => {{
-        let target = if $target.has_root() {
-            let mut iter = $target.components();
-            iter.next();
-            PathBuf::from_iter(iter)
-        } else {
-            $target
-        };
-
-        $img_path.join(target)
-    }};
-}
 
 pub struct ContainerEngine {
     proc: Option<Child>,
