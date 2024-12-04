@@ -50,4 +50,8 @@ impl ContainerImg {
 
         Ok(join_img_abs!(self.path, manifest.test_script).is_file())
     }
+
+    pub fn cleanup(self) -> Result<(), ContainerError> {
+        fs::remove_dir_all(self.path).map_err(|_| ContainerError::FileNotFound)
+    }
 }
