@@ -15,4 +15,6 @@ crate-type = ["cdylib"]
 neon = "1"
 shared = { path = "../shared" }
 tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1.11.0", features = ["v4", "fast-rng"] }
 zbus = { version = "5.1.1", default-features = false, features = ["tokio"] }
+zip = "2.2.1"

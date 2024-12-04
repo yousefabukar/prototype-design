@@ -1,4 +1,5 @@
 mod service;
+mod image;
 
 use neon::prelude::*;
 
