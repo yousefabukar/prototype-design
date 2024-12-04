@@ -2,8 +2,8 @@ use crate::error::ContainerError;
 use crate::image::ContainerImg;
 use crate::service::ContainerManagerProxy;
 use flate2::read::GzDecoder;
-use shared::engine::ContainerHandle;
 use shared::image::ImageOptions;
+use shared::{engine::ContainerHandle, image::TestOutput};
 use std::env;
 use std::fs::File;
 use std::path::PathBuf;
@@ -59,6 +59,31 @@ impl ContainerEngine {
                 .map_err(|_| ContainerError::FileNotFound)?;
         }
 
+        Ok(())
+    }
+
+    pub async fn wait_for_output(
+        &self,
+        proxy: ContainerManagerProxy<'_>,
+    ) -> Result<(), ContainerError> {
+        proxy.wait_for_completion(self.handle.clone()).await?;
+        Ok(())
+    }
+
+    pub async fn run_tests(
+        &self,
+        proxy: ContainerManagerProxy<'_>,
+    ) -> Result<Vec<TestOutput>, ContainerError> {
+        Ok(proxy.test_output(self.handle.clone()).await?)
+    }
+
+    pub async fn cleanup(self) -> Result<(), ContainerError> {
+        if let Some(path) = self.assignment_path {
+            fs::remove_dir_all(path)
+                .await
+                .map_err(|_| ContainerError::FileNotFound)?;
+        }
+        
         Ok(())
     }
 }
