@@ -14,4 +14,5 @@ crate-type = ["cdylib"]
 [dependencies]
 neon = "1"
 shared = { path = "../shared" }
+tokio = { version = "1.42.0", features = ["macros", "rt-multi-thread"] }
 zbus = { version = "5.1.1", default-features = false, features = ["tokio"] }
