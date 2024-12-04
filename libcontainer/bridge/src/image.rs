@@ -48,7 +48,9 @@ impl ContainerImg {
             return Ok(false);
         };
 
-        Ok(join_img_abs!(self.path, manifest.test_script).is_file())
+        Ok(join_img_abs!(self.path, manifest.test_script).is_file()
+            && !join_img_abs!(self.path, manifest.extraction_dir).exists()
+            && !join_img_abs!(self.path, manifest.test_manifest).exists())
     }
 
     pub fn cleanup(self) -> Result<(), ContainerError> {
