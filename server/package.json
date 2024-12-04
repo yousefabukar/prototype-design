@@ -1,11 +1,16 @@
 {
-  "name": "server",
+  "name": "prototype-design-server",
   "version": "1.0.0",
-  "description": "Back-end server for FNCS Champions",
+  "description": "Server for the prototype design project",
   "main": "index.js",
+  "type": "module", 
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server/index.js"
   },
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.11.5"
+  }
 }
