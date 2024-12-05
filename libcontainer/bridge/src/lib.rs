@@ -6,14 +6,14 @@ mod error;
 mod image;
 mod service;
 
+use binding::image::JsContainerImg;
 use neon::prelude::*;
 
-fn hello(mut cx: FunctionContext) -> JsResult<JsString> {
-    Ok(cx.string("hello node"))
-}
-
 #[neon::main]
-fn main(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("hello", hello)?;
+fn main(mut ctx: ModuleContext) -> NeonResult<()> {
+    ctx.export_function("binding__containerimg_new", JsContainerImg::js_new)?;
+    ctx.export_function("binding__containerimg_extract", JsContainerImg::extract)?;
+    ctx.export_function("binding__containerimg_verify", JsContainerImg::verify)?;
+
     Ok(())
 }
