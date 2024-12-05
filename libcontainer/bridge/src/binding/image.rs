@@ -37,4 +37,22 @@ impl JsContainerImg {
 
         Ok(promise)
     }
+
+    pub fn verify(mut ctx: FunctionContext) -> JsResult<JsPromise> {
+        let mut img = (**ctx.this::<JsBox<ContainerImg>>()?).clone();
+
+        let channel = ctx.channel();
+        let (resolve, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let ex = img.verify();
+
+            resolve.settle_with(
+                &channel,
+                move |mut ctx| Ok(ctx.boolean(ex.unwrap_or(false))),
+            );
+        });
+
+        Ok(promise)
+    }
 }
