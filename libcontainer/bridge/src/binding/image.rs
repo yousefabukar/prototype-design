@@ -5,7 +5,15 @@ use std::path::PathBuf;
 
 impl Finalize for ContainerImg {
     fn finalize<'a, C: Context<'a>>(self, _: &mut C) {
-        let _ = self.cleanup();
+        RUNTIME.spawn(async move {
+            #[cfg(debug_assertions)]
+            self.cleanup()
+                .await
+                .expect("Cleanup of image extraction failed");
+
+            #[cfg(not(debug_assertions))]
+            let _ = self.cleanup().await;
+        });
     }
 }
 
