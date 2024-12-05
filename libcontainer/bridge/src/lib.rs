@@ -1,5 +1,6 @@
 #![warn(clippy::todo, clippy::dbg_macro, clippy::unwrap_used)]
 
+mod binding;
 mod engine;
 mod error;
 mod image;
