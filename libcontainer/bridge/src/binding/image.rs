@@ -18,7 +18,23 @@ impl JsContainerImg {
     }
 
     pub fn extract(mut ctx: FunctionContext) -> JsResult<JsPromise> {
-        let img = ctx.this::<JsBox<ContainerImg>>()?;
-        todo!()
+        let mut img = (**ctx.this::<JsBox<ContainerImg>>()?).clone();
+
+        let channel = ctx.channel();
+        let (resolve, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let ex = img.extract();
+
+            resolve.settle_with(&channel, move |mut ctx| {
+                if let Err(error) = ex {
+                    ctx.throw_error(error.to_string())
+                } else {
+                    Ok(ctx.undefined())
+                }
+            });
+        });
+
+        Ok(promise)
     }
 }
