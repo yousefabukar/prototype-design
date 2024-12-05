@@ -61,9 +61,8 @@ impl ContainerEngine {
     pub async fn wait_for_output(
         &self,
         proxy: ContainerManagerProxy<'_>,
-    ) -> Result<(), ContainerError> {
-        proxy.wait_for_completion(self.handle.clone()).await?;
-        Ok(())
+    ) -> Result<String, ContainerError> {
+        Ok(proxy.wait_for_completion(self.handle.clone()).await?)
     }
 
     pub async fn run_tests(
