@@ -1,3 +1,4 @@
+pub mod engine;
 pub mod image;
 
 use std::sync::LazyLock;
