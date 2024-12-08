@@ -2,7 +2,7 @@ use neon::prelude::*;
 use std::ops::{Deref, DerefMut};
 use tokio::sync::Mutex;
 
-pub struct JsMutex<T>(Mutex<T>);
+pub struct JsMutex<T>(pub Mutex<T>);
 
 impl<T> Finalize for JsMutex<T>
 where

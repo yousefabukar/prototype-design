@@ -1,4 +1,5 @@
 use super::parse::FromObject;
+use super::utils::JsMutex;
 use super::RUNTIME;
 use crate::engine::ContainerEngine;
 use crate::error::ContainerError;
@@ -7,7 +8,12 @@ use crate::service::ContainerManagerProxy;
 use neon::prelude::*;
 use shared::engine::ContainerHandle;
 use shared::image::{ImageManifest, ImageOptions, TestOutput};
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 use zbus::Connection;
+
+type JsContainerPtr = JsBox<Arc<JsMutex<ContainerEngine>>>;
 
 impl Finalize for ContainerEngine {
     fn finalize<'a, C: Context<'a>>(self, _: &mut C) {
@@ -47,7 +53,7 @@ impl JsContainerEngine<'_> {
 
                 let engine = ContainerEngine::new(proxy, opts, img).await?;
 
-                Ok::<_, ContainerError>(engine)
+                Ok::<_, ContainerError>(Arc::new(JsMutex(Mutex::new(engine))))
             }
             .await;
 
@@ -55,6 +61,28 @@ impl JsContainerEngine<'_> {
                 Ok(value) => Ok(ctx.boxed(value)),
                 Err(e) => ctx.throw_error(e.to_string()),
             })
+        });
+
+        Ok(promise)
+    }
+
+    pub fn set_submission(mut ctx: FunctionContext) -> JsResult<JsPromise> {
+        let engine_ptr = (**ctx.argument::<JsContainerPtr>(0)?).clone();
+        let path = PathBuf::from(ctx.argument::<JsString>(1)?.value(&mut ctx));
+
+        let channel = ctx.channel();
+        let (deferred, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let res = engine_ptr.lock().await.set_submission(path).await;
+
+            deferred.settle_with(&channel, move |mut ctx| {
+                if let Err(e) = res {
+                    ctx.throw_error(e.to_string())
+                } else {
+                    Ok(ctx.undefined())
+                }
+            });
         });
 
         Ok(promise)
