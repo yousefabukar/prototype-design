@@ -11,15 +11,16 @@ use tar::Archive;
 use tokio::fs::{self};
 use uuid::Uuid;
 
-pub struct ContainerEngine {
+pub struct ContainerEngine<'a> {
     handle: ContainerHandle,
     img: ContainerImg,
     assignment_path: Option<PathBuf>,
+    proxy: ContainerManagerProxy<'a>,
 }
 
-impl ContainerEngine {
+impl<'a> ContainerEngine<'a> {
     pub async fn new(
-        proxy: ContainerManagerProxy<'_>,
+        proxy: ContainerManagerProxy<'a>,
         opts: ImageOptions,
         img: ContainerImg,
     ) -> Result<Self, ContainerError> {
@@ -28,6 +29,7 @@ impl ContainerEngine {
         Ok(ContainerEngine {
             handle,
             img,
+            proxy,
             assignment_path: None,
         })
     }
@@ -58,18 +60,12 @@ impl ContainerEngine {
         Ok(())
     }
 
-    pub async fn wait_for_output(
-        &self,
-        proxy: ContainerManagerProxy<'_>,
-    ) -> Result<String, ContainerError> {
-        Ok(proxy.wait_for_completion(self.handle.clone()).await?)
+    pub async fn wait_for_output(&self) -> Result<String, ContainerError> {
+        Ok(self.proxy.wait_for_completion(self.handle.clone()).await?)
     }
 
-    pub async fn run_tests(
-        &self,
-        proxy: ContainerManagerProxy<'_>,
-    ) -> Result<Vec<TestOutput>, ContainerError> {
-        Ok(proxy.test_output(self.handle.clone()).await?)
+    pub async fn run_tests(&self) -> Result<Vec<TestOutput>, ContainerError> {
+        Ok(self.proxy.test_output(self.handle.clone()).await?)
     }
 
     pub async fn cleanup(self) -> Result<(), ContainerError> {

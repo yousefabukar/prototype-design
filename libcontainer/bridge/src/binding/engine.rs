@@ -13,9 +13,9 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use zbus::Connection;
 
-type JsContainerPtr = JsBox<Arc<JsMutex<ContainerEngine>>>;
+type JsContainerPtr<'a> = JsBox<Arc<JsMutex<ContainerEngine<'a>>>>;
 
-impl Finalize for ContainerEngine {
+impl Finalize for ContainerEngine<'static> {
     fn finalize<'a, C: Context<'a>>(self, _: &mut C) {
         RUNTIME.spawn(async move {
             #[cfg(debug_assertions)]
@@ -29,13 +29,9 @@ impl Finalize for ContainerEngine {
     }
 }
 
-pub struct JsContainerEngine<'a> {
-    handle: ContainerHandle,
-    conn: Connection,
-    proxy: ContainerManagerProxy<'a>,
-}
+pub struct JsContainerEngine;
 
-impl JsContainerEngine<'_> {
+impl JsContainerEngine {
     pub fn js_new(mut ctx: FunctionContext) -> JsResult<JsPromise> {
         let opts = {
             let js_val = ctx.argument::<JsObject>(0)?;
