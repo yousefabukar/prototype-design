@@ -1,5 +1,5 @@
 [package]
-name = "libcontainer-bridge"
+name = "bridge"
 version = "0.1.0"
 description = "Node.JS bridge for libcontainer"
 license = "ISC"
