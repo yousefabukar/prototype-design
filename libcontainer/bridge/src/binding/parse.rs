@@ -1,7 +1,6 @@
 use neon::prelude::*;
 use shared::image::ImageOptions;
 use shared::image::TestOutput;
-use std::path::PathBuf;
 
 macro_rules! get_type {
     ($ctx: expr, $obj: expr, $target: ty, $key: expr) => {
@@ -24,7 +23,6 @@ impl FromObject for ImageOptions {
         Ok(ImageOptions {
             cpus: get_type!(ctx, obj, JsNumber, "cpus") as u8,
             mem: get_type!(ctx, obj, JsNumber, "cpus") as u64,
-            manifest_path: PathBuf::from(get_type!(ctx, obj, JsString, "manifestPath")),
         })
     }
 }

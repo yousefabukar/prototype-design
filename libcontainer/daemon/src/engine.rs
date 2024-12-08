@@ -1,5 +1,6 @@
 use crate::error::EngineError;
 use crate::sys::SchedulerIface;
+use shared::image::MANIFEST_URI;
 use shared::image::{ImageManifest, ImageOptions, TestOutput};
 use shared::join_img_abs;
 use std::path::PathBuf;
@@ -15,8 +16,10 @@ pub struct ContainerEngine {
 
 impl ContainerEngine {
     pub async fn new(opts: ImageOptions, img_path: PathBuf) -> Result<Self, EngineError> {
+        let manifest_uri = PathBuf::from(MANIFEST_URI);
+
         let manifest: ImageManifest = serde_json::from_slice(
-            &fs::read(join_img_abs!(img_path, opts.manifest_path))
+            &fs::read(join_img_abs!(img_path, manifest_uri))
                 .await
                 .map_err(|_| EngineError::FileNotFound)?,
         )?;

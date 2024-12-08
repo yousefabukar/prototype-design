@@ -1,7 +1,7 @@
 use crate::error::ContainerError;
 use crate::utils;
 use flate2::read::GzDecoder;
-use shared::image::ImageManifest;
+use shared::image::{ImageManifest, MANIFEST_URI};
 use shared::join_img_abs;
 use std::env;
 use std::fs::File;
@@ -9,8 +9,6 @@ use std::path::PathBuf;
 use tar::Archive;
 use tokio::fs;
 use uuid::Uuid;
-
-const MANIFEST_URI: &str = "/root/manifest.json";
 
 #[derive(Clone)]
 pub struct ContainerImg {
