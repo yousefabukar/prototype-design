@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-type JsImgPtr = JsBox<Arc<JsMutex<ContainerImg>>>;
+pub type JsImgPtr = JsBox<Arc<JsMutex<ContainerImg>>>;
 
 impl Finalize for ContainerImg {
     fn finalize<'a, C: Context<'a>>(self, _: &mut C) {

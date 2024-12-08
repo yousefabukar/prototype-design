@@ -1,9 +1,9 @@
+use super::image::JsImgPtr;
 use super::parse::{FromObject, ToObject};
 use super::utils::JsMutex;
 use super::RUNTIME;
 use crate::engine::ContainerEngine;
 use crate::error::ContainerError;
-use crate::image::ContainerImg;
 use crate::service::ContainerManagerProxy;
 use neon::prelude::*;
 use shared::image::ImageOptions;
@@ -36,8 +36,8 @@ impl JsContainerEngine {
             let js_val = ctx.argument::<JsObject>(0)?;
             ImageOptions::from_js(&mut ctx, js_val)?
         };
-        let img = (**ctx.argument::<JsBox<ContainerImg>>(1)?).clone();
-        let submission_path = PathBuf::from(ctx.argument::<JsString>(2)?.value(&mut ctx));
+        let img = (**ctx.argument::<JsImgPtr>(0)?).clone();
+        let submission_path = PathBuf::from(ctx.argument::<JsString>(1)?.value(&mut ctx));
 
         let channel = ctx.channel();
         let (deferred, promise) = ctx.promise();
@@ -47,7 +47,9 @@ impl JsContainerEngine {
                 let conn = Connection::session().await?;
                 let proxy = ContainerManagerProxy::new(&conn).await?;
 
-                let engine = ContainerEngine::new(proxy, opts, img, submission_path).await?;
+                let engine =
+                    ContainerEngine::new(proxy, opts, img.lock().await.clone(), submission_path)
+                        .await?;
 
                 Ok::<_, ContainerError>(Arc::new(JsMutex(Mutex::new(engine))))
             }
