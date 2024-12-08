@@ -64,7 +64,7 @@ impl<'a> ContainerEngine<'a> {
         Ok(self.proxy.wait_for_completion(self.handle.clone()).await?)
     }
 
-    pub async fn run_tests(&self) -> Result<Vec<TestOutput>, ContainerError> {
+    pub async fn test_output(&self) -> Result<Vec<TestOutput>, ContainerError> {
         Ok(self.proxy.test_output(self.handle.clone()).await?)
     }
 

@@ -1,4 +1,4 @@
-use super::parse::FromObject;
+use super::parse::{FromObject, ToObject};
 use super::utils::JsMutex;
 use super::RUNTIME;
 use crate::engine::ContainerEngine;
@@ -95,6 +95,24 @@ impl JsContainerEngine {
 
             deferred.settle_with(&channel, move |mut ctx| match res {
                 Ok(data) => Ok(ctx.string(data)),
+                Err(e) => ctx.throw_error(e.to_string()),
+            });
+        });
+
+        Ok(promise)
+    }
+
+    pub fn test_output(mut ctx: FunctionContext) -> JsResult<JsPromise> {
+        let engine_ptr = (**ctx.this::<JsContainerPtr>()?).clone();
+
+        let channel = ctx.channel();
+        let (deferred, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let res = engine_ptr.lock().await.test_output().await;
+
+            deferred.settle_with(&channel, move |mut ctx| match res {
+                Ok(data) => Ok(data.to_js::<JsArray, _>(&mut ctx)?),
                 Err(e) => ctx.throw_error(e.to_string()),
             });
         });
