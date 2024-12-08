@@ -1,6 +1,6 @@
 pub mod engine;
 pub mod image;
-pub mod parse;
+mod parse;
 mod utils;
 
 use std::sync::LazyLock;
