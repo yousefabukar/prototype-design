@@ -1,6 +1,7 @@
 pub mod engine;
 pub mod image;
 pub mod parse;
+mod utils;
 
 use std::sync::LazyLock;
 use tokio::runtime::Runtime;
