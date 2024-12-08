@@ -3,18 +3,15 @@ use crate::image::ContainerImg;
 use crate::service::ContainerManagerProxy;
 use flate2::read::GzDecoder;
 use shared::image::ImageOptions;
+use shared::join_img_abs;
 use shared::{engine::ContainerHandle, image::TestOutput};
-use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 use tar::Archive;
-use tokio::fs::{self};
-use uuid::Uuid;
 
 pub struct ContainerEngine<'a> {
     handle: ContainerHandle,
     img: ContainerImg,
-    assignment_path: Option<PathBuf>,
     proxy: ContainerManagerProxy<'a>,
 }
 
@@ -22,20 +19,23 @@ impl<'a> ContainerEngine<'a> {
     pub async fn new(
         proxy: ContainerManagerProxy<'a>,
         opts: ImageOptions,
-        img: ContainerImg,
+        base_img: ContainerImg,
+        submission_path: PathBuf,
     ) -> Result<Self, ContainerError> {
-        let handle = proxy.new_container(opts, img.path.clone()).await?;
+        let handle = proxy.new_container(opts, base_img.path.clone()).await?;
 
-        Ok(ContainerEngine {
-            handle,
-            img,
-            proxy,
-            assignment_path: None,
-        })
+        let mut img = base_img.clone();
+        img.extract()?;
+
+        let engine_ptr = ContainerEngine { handle, img, proxy };
+        engine_ptr.extract_submission(submission_path).await?;
+
+        Ok(engine_ptr)
     }
 
-    pub async fn set_submission(&mut self, path: PathBuf) -> Result<(), ContainerError> {
-        let new_path = env::temp_dir().join(Uuid::new_v4().to_string());
+    async fn extract_submission(&self, path: PathBuf) -> Result<(), ContainerError> {
+        let target_path = self.img.read_manifest().await?.extraction_dir;
+        let target_path = join_img_abs!(self.img.path, target_path);
 
         {
             let archive_ptr = File::open(path).map_err(|_| ContainerError::FileNotFound)?;
@@ -43,18 +43,8 @@ impl<'a> ContainerEngine<'a> {
 
             let mut archive = Archive::new(decoder);
             archive
-                .unpack(&new_path)
+                .unpack(&target_path)
                 .map_err(|_| ContainerError::ExtractionFailure)?;
-        }
-
-        {
-            let Some(old_path) = self.assignment_path.replace(new_path) else {
-                return Ok(());
-            };
-
-            fs::remove_dir_all(old_path)
-                .await
-                .map_err(|_| ContainerError::FileNotFound)?;
         }
 
         Ok(())
@@ -69,12 +59,7 @@ impl<'a> ContainerEngine<'a> {
     }
 
     pub async fn cleanup(self) -> Result<(), ContainerError> {
-        if let Some(path) = self.assignment_path {
-            fs::remove_dir_all(path)
-                .await
-                .map_err(|_| ContainerError::FileNotFound)?;
-        }
-
+        self.img.cleanup().await?;
         Ok(())
     }
 }

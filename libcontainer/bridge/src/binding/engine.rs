@@ -37,6 +37,7 @@ impl JsContainerEngine {
             ImageOptions::from_js(&mut ctx, js_val)?
         };
         let img = (**ctx.argument::<JsBox<ContainerImg>>(0)?).clone();
+        let submission_path = PathBuf::from(ctx.argument::<JsString>(1)?.value(&mut ctx));
 
         let channel = ctx.channel();
         let (deferred, promise) = ctx.promise();
@@ -46,7 +47,7 @@ impl JsContainerEngine {
                 let conn = Connection::session().await?;
                 let proxy = ContainerManagerProxy::new(&conn).await?;
 
-                let engine = ContainerEngine::new(proxy, opts, img).await?;
+                let engine = ContainerEngine::new(proxy, opts, img, submission_path).await?;
 
                 Ok::<_, ContainerError>(Arc::new(JsMutex(Mutex::new(engine))))
             }
@@ -56,28 +57,6 @@ impl JsContainerEngine {
                 Ok(value) => Ok(ctx.boxed(value)),
                 Err(e) => ctx.throw_error(e.to_string()),
             })
-        });
-
-        Ok(promise)
-    }
-
-    pub fn set_submission(mut ctx: FunctionContext) -> JsResult<JsPromise> {
-        let engine_ptr = (**ctx.this::<JsContainerPtr>()?).clone();
-        let path = PathBuf::from(ctx.argument::<JsString>(0)?.value(&mut ctx));
-
-        let channel = ctx.channel();
-        let (deferred, promise) = ctx.promise();
-
-        RUNTIME.spawn(async move {
-            let res = engine_ptr.lock().await.set_submission(path).await;
-
-            deferred.settle_with(&channel, move |mut ctx| {
-                if let Err(e) = res {
-                    ctx.throw_error(e.to_string())
-                } else {
-                    Ok(ctx.undefined())
-                }
-            });
         });
 
         Ok(promise)

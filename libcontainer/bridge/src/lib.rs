@@ -18,10 +18,6 @@ fn main(mut ctx: ModuleContext) -> NeonResult<()> {
 
     ctx.export_function("binding__containerengine_new", JsContainerEngine::js_new)?;
     ctx.export_function(
-        "binding__containerengine_setsubmission",
-        JsContainerEngine::set_submission,
-    )?;
-    ctx.export_function(
         "binding__containerengine_waitcompletion",
         JsContainerEngine::wait_for_completion,
     )?;

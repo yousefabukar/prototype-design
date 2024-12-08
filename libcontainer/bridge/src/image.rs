@@ -3,7 +3,7 @@ use flate2::read::GzDecoder;
 use shared::image::ImageManifest;
 use shared::join_img_abs;
 use std::env;
-use std::fs::{self, File};
+use std::fs::File;
 use std::path::PathBuf;
 use tar::Archive;
 use uuid::Uuid;

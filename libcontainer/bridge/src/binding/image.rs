@@ -1,6 +1,5 @@
 use super::utils::JsMutex;
 use super::RUNTIME;
-use crate::error::ContainerError;
 use crate::image::ContainerImg;
 use neon::prelude::*;
 use std::path::PathBuf;
