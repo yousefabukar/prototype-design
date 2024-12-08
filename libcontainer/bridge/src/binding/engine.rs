@@ -83,4 +83,22 @@ impl JsContainerEngine {
 
         Ok(promise)
     }
+
+    pub fn wait_for_completion(mut ctx: FunctionContext) -> JsResult<JsPromise> {
+        let engine_ptr = (**ctx.this::<JsContainerPtr>()?).clone();
+
+        let channel = ctx.channel();
+        let (deferred, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let res = engine_ptr.lock().await.wait_for_output().await;
+
+            deferred.settle_with(&channel, move |mut ctx| match res {
+                Ok(data) => Ok(ctx.string(data)),
+                Err(e) => ctx.throw_error(e.to_string()),
+            });
+        });
+
+        Ok(promise)
+    }
 }
