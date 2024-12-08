@@ -1,11 +1,13 @@
+use super::utils::JsMutex;
 use super::RUNTIME;
 use crate::error::ContainerError;
 use crate::image::ContainerImg;
 use neon::prelude::*;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
-type JsImgPtr = JsBox<Arc<Mutex<ContainerImg>>>;
+type JsImgPtr = JsBox<Arc<JsMutex<ContainerImg>>>;
 
 impl Finalize for ContainerImg {
     fn finalize<'a, C: Context<'a>>(self, _: &mut C) {
@@ -21,21 +23,12 @@ impl Finalize for ContainerImg {
     }
 }
 
-macro_rules! lock_ptr {
-    ($target: expr, $func: block) => {
-        $target
-            .lock()
-            .map_err(|_| ContainerError::LockError)
-            .and_then($func)
-    };
-}
-
 pub struct JsContainerImg;
 
 impl JsContainerImg {
     pub fn js_new(mut ctx: FunctionContext) -> JsResult<JsImgPtr> {
         let path = PathBuf::from(ctx.argument::<JsString>(0)?.value(&mut ctx));
-        Ok(ctx.boxed(Arc::new(Mutex::new(ContainerImg::new(path)))))
+        Ok(ctx.boxed(Arc::new(JsMutex(Mutex::new(ContainerImg::new(path))))))
     }
 
     pub fn extract(mut ctx: FunctionContext) -> JsResult<JsPromise> {
@@ -45,7 +38,7 @@ impl JsContainerImg {
         let (deferred, promise) = ctx.promise();
 
         RUNTIME.spawn(async move {
-            let ex = lock_ptr!(img, { |mut guard| guard.extract() });
+            let ex = img.lock().await.extract();
 
             deferred.settle_with(&channel, move |mut ctx| {
                 if let Err(error) = ex {
@@ -66,7 +59,7 @@ impl JsContainerImg {
         let (deferred, promise) = ctx.promise();
 
         RUNTIME.spawn(async move {
-            let ex = lock_ptr!(img, { |mut guard| guard.verify() });
+            let ex = img.lock().await.verify().await;
 
             deferred.settle_with(
                 &channel,

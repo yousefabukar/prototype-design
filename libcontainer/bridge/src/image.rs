@@ -35,18 +35,12 @@ impl ContainerImg {
         Ok(())
     }
 
-    pub fn verify(&mut self) -> Result<bool, ContainerError> {
+    pub async fn verify(&mut self) -> Result<bool, ContainerError> {
         if !self.path.is_dir() {
             return Ok(false);
         }
 
-        let manfiest_bytes = {
-            let rel_manfiest = PathBuf::from(MANIFEST_URI);
-            let manfiest_uri = join_img_abs!(self.path, rel_manfiest);
-            fs::read(manfiest_uri).map_err(|_| ContainerError::FileNotFound)?
-        };
-
-        let Ok(manifest): Result<ImageManifest, _> = serde_json::from_slice(&manfiest_bytes) else {
+        let Ok(manifest) = self.read_manifest().await else {
             return Ok(false);
         };
 
@@ -59,5 +53,17 @@ impl ContainerImg {
         tokio::fs::remove_dir_all(self.path)
             .await
             .map_err(|_| ContainerError::FileNotFound)
+    }
+
+    pub async fn read_manifest(&self) -> Result<ImageManifest, ContainerError> {
+        let manfiest_bytes = {
+            let rel_manfiest = PathBuf::from(MANIFEST_URI);
+            let manfiest_uri = join_img_abs!(self.path, rel_manfiest);
+            tokio::fs::read(manfiest_uri)
+                .await
+                .map_err(|_| ContainerError::FileNotFound)?
+        };
+
+        serde_json::from_slice(&manfiest_bytes).map_err(|_| ContainerError::FileNotFound)
     }
 }
