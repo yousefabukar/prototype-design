@@ -19,5 +19,5 @@ pub struct ImageManifest {
 #[derive(Type, Serialize, Deserialize)]
 pub struct TestOutput {
     pub passed: bool,
-    pub weight: usize,
+    pub weight: u32,
 }
