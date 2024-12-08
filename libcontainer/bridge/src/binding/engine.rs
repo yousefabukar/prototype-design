@@ -67,8 +67,8 @@ impl JsContainerEngine<'_> {
     }
 
     pub fn set_submission(mut ctx: FunctionContext) -> JsResult<JsPromise> {
-        let engine_ptr = (**ctx.argument::<JsContainerPtr>(0)?).clone();
-        let path = PathBuf::from(ctx.argument::<JsString>(1)?.value(&mut ctx));
+        let engine_ptr = (**ctx.this::<JsContainerPtr>()?).clone();
+        let path = PathBuf::from(ctx.argument::<JsString>(0)?.value(&mut ctx));
 
         let channel = ctx.channel();
         let (deferred, promise) = ctx.promise();
