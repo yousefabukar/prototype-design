@@ -36,8 +36,8 @@ impl JsContainerEngine {
             let js_val = ctx.argument::<JsObject>(0)?;
             ImageOptions::from_js(&mut ctx, js_val)?
         };
-        let img = (**ctx.argument::<JsImgPtr>(0)?).clone();
-        let submission_path = PathBuf::from(ctx.argument::<JsString>(1)?.value(&mut ctx));
+        let img = (**ctx.argument::<JsImgPtr>(1)?).clone();
+        let submission_path = PathBuf::from(ctx.argument::<JsString>(2)?.value(&mut ctx));
 
         let channel = ctx.channel();
         let (deferred, promise) = ctx.promise();
