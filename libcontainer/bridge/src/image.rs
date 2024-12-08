@@ -10,7 +10,6 @@ use uuid::Uuid;
 
 const MANIFEST_URI: &str = "/root/manifest.json";
 
-#[derive(Clone)]
 pub struct ContainerImg {
     pub(super) path: PathBuf,
 }
