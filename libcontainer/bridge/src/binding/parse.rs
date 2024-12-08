@@ -16,7 +16,7 @@ pub trait FromObject {
 }
 
 pub trait ToObject<'a> {
-    fn to_js<T: Value>(self, ctx: &mut FunctionContext<'a>) -> NeonResult<Handle<'a, T>>;
+    fn to_js<T: Value, C: Context<'a>>(self, ctx: &mut C) -> NeonResult<Handle<'a, T>>;
 }
 
 impl FromObject for ImageOptions {
@@ -30,7 +30,7 @@ impl FromObject for ImageOptions {
 }
 
 impl<'a> ToObject<'a> for TestOutput {
-    fn to_js<T: Value>(self, ctx: &mut FunctionContext<'a>) -> NeonResult<Handle<'a, T>> {
+    fn to_js<T: Value, C: Context<'a>>(self, ctx: &mut C) -> NeonResult<Handle<'a, T>> {
         let passed = ctx.boolean(self.passed);
         let weight = ctx.number(self.weight);
 
@@ -43,11 +43,11 @@ impl<'a> ToObject<'a> for TestOutput {
 }
 
 impl<'a> ToObject<'a> for Vec<TestOutput> {
-    fn to_js<T: Value>(self, ctx: &mut FunctionContext<'a>) -> NeonResult<Handle<'a, T>> {
+    fn to_js<T: Value, C: Context<'a>>(self, ctx: &mut C) -> NeonResult<Handle<'a, T>> {
         let arr = JsArray::new(ctx, self.len());
 
         for (idx, test) in self.into_iter().enumerate() {
-            let value = test.to_js::<JsObject>(ctx)?;
+            let value = test.to_js::<JsObject, C>(ctx)?;
             arr.set(ctx, idx as u32, value)?;
         }
 
