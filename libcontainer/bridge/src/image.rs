@@ -1,5 +1,4 @@
 use crate::error::ContainerError;
-use crate::utils;
 use flate2::read::GzDecoder;
 use shared::image::{ImageManifest, MANIFEST_URI};
 use shared::join_img_abs;
@@ -7,7 +6,6 @@ use std::env;
 use std::fs::File;
 use std::path::PathBuf;
 use tar::Archive;
-use tokio::fs;
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -50,7 +48,7 @@ impl ContainerImg {
     }
 
     pub async fn cleanup(self) -> Result<(), ContainerError> {
-        fs::remove_dir_all(self.path)
+        tokio::fs::remove_dir_all(self.path)
             .await
             .map_err(|_| ContainerError::FileNotFound)
     }
@@ -59,20 +57,11 @@ impl ContainerImg {
         let manfiest_bytes = {
             let rel_manfiest = PathBuf::from(MANIFEST_URI);
             let manfiest_uri = join_img_abs!(self.path, rel_manfiest);
-            fs::read(manfiest_uri)
+            tokio::fs::read(manfiest_uri)
                 .await
                 .map_err(|_| ContainerError::FileNotFound)?
         };
 
         serde_json::from_slice(&manfiest_bytes).map_err(|_| ContainerError::FileNotFound)
-    }
-
-    pub async fn create_copy(&self) -> Result<Self, ContainerError> {
-        let target_dir = env::temp_dir().join(Uuid::new_v4().to_string());
-        utils::copy_dir(&self.path, &target_dir)
-            .await
-            .map_err(|_| ContainerError::CopyFailure)?;
-
-        Ok(ContainerImg { path: target_dir })
     }
 }

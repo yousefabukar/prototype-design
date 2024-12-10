@@ -13,6 +13,6 @@ pub enum ContainerError {
     ConnErr(#[from] zbus::Error),
     #[error("Failed to run async task at runtime: {0}")]
     TokioTask(#[from] tokio::task::JoinError),
-    #[error("Failed to create clone of image")]
-    CopyFailure,
+    #[error("Failed to lock on mutex pointer")]
+    LockError,
 }
