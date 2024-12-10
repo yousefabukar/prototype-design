@@ -5,7 +5,6 @@ mod engine;
 mod error;
 mod image;
 mod service;
-mod utils;
 
 use binding::engine::JsContainerEngine;
 use binding::image::JsContainerImg;
