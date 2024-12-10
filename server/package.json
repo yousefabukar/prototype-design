@@ -1,0 +1,16 @@
+{
+  "name": "prototype-design-server",
+  "version": "1.0.0",
+  "description": "Server for the prototype design project",
+  "main": "index.js",
+  "type": "module", 
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.11.5"
+  }
+}
