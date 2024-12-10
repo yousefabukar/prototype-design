@@ -24,8 +24,7 @@ impl<'a> ContainerEngine<'a> {
     ) -> Result<Self, ContainerError> {
         let handle = proxy.new_container(opts, base_img.path.clone()).await?;
 
-        let mut img = base_img.clone();
-        img.extract()?;
+        let img = base_img.create_copy()?;
 
         let engine_ptr = ContainerEngine { handle, img, proxy };
         engine_ptr.extract_submission(submission_path).await?;

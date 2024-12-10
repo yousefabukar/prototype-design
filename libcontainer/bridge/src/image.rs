@@ -10,11 +10,15 @@ use uuid::Uuid;
 #[derive(Clone)]
 pub struct ContainerImg {
     pub(super) path: PathBuf,
+    original_path: Option<PathBuf>,
 }
 
 impl ContainerImg {
     pub fn new(path: PathBuf) -> Self {
-        ContainerImg { path }
+        ContainerImg {
+            path,
+            original_path: None,
+        }
     }
 
     pub fn extract(&mut self) -> Result<(), ContainerError> {
@@ -27,6 +31,7 @@ impl ContainerImg {
             .unpack(&target_dir)
             .map_err(|_| ContainerError::ExtractionFailure)?;
 
+        self.original_path.replace(self.path.clone());
         self.path = target_dir;
         Ok(())
     }
@@ -61,5 +66,19 @@ impl ContainerImg {
         };
 
         serde_json::from_slice(&manfiest_bytes).map_err(|_| ContainerError::FileNotFound)
+    }
+
+    pub(super) fn create_copy(&self) -> Result<ContainerImg, ContainerError> {
+        let mut new_img = ContainerImg {
+            path: self
+                .original_path
+                .clone()
+                .ok_or(ContainerError::FileNotFound)?,
+            original_path: None,
+        };
+
+        new_img.extract()?;
+
+        Ok(new_img)
     }
 }
