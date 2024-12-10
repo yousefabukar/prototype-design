@@ -30,7 +30,7 @@ class ContainerEngine {
     }
 
     async init() {
-        await _root.binding__containerengine_new(this.imageOptions, this.image.inner, this.submissionPath);
+        this.inner = await _root.binding__containerengine_new(this.imageOptions, this.image.inner, this.submissionPath);
     }
 
     async waitForOutput() {
