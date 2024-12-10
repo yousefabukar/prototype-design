@@ -1,10 +1,31 @@
 import { useState } from 'react';
-import './globalStyles.css';
-import assignments from './assignments.js';
-import AddAssignment from './AddAssignments.js';
-import SubmissionsList from './SubmissionsList';
-import EditAssignment from './EditAssignment.js';
-import GradeSubmission from './GradeSubmission.js';
+import './styles.css';
+import AddAssignment from './pages/AddAssignments.js';
+import SubmissionsList from './pages/SubmissionsList';
+import EditAssignment from './pages/EditAssignment.js';
+import GradeSubmission from './pages/GradeSubmission.js';
+
+const assignments = [           /* dummy data*/
+  {
+      id: 1,
+      title: "Homework",
+      module: "Functional Programming",
+      dueDate: "28-11-2024",
+  },
+  {             
+      id: 2,
+      title: "News Classifier",
+      module: "Object Oriented Programming",
+      dueDate: "17-1-2024",
+  },
+  {
+      id: 3,
+      title: "Server & Client Firewall Rules",
+      module: "Operating Systems & System Programming",
+      dueDate: "19-10-2024",
+  },
+];
+
 
 function ListOfAssignments() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -34,9 +55,31 @@ function ListOfAssignments() {
 
   return (
     <div>
-      <h1>FNCS (Flexible New Code Submission)</h1>
-      <h2>Assignment List</h2>
-      <button onClick={() => setShowAddForm(true)}>+ Add New Assignment</button>
+      <div style={{ 
+        display: 'flex',
+        justifyContent: 'space-between',      
+        alignItems: 'center',
+        marginBottom: '20px'
+      }}>
+        <div>
+          <h1>FNCS (Flexible New Code Submission)</h1>
+          <h2>Assignment List</h2>
+        </div>
+        <button 
+          onClick={() => setShowAddForm(true)}
+          style={{
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+        >
+          + Add New Assignment
+        </button>
+      </div>
       <div>
         <table>
           <thead>
@@ -63,7 +106,7 @@ function ListOfAssignments() {
         </table>
       </div>
     </div>
-  );
+   );
 }
 
 export default ListOfAssignments;

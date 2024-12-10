@@ -4,9 +4,9 @@ function AddAssignment({ onCancel }) {
     const [formData, setFormData] = useState({
         title: '',
         module: '',
-        dueDate: '',
+        dueDate: '',            // state initialization for assignment creation
         resources: {
-            cpu: '0.5 vCPU',
+            cpu: '1 vCPU',
             memory: '1GB'
         }
     });
@@ -17,7 +17,7 @@ function AddAssignment({ onCancel }) {
 
                 // this will be connected to the backend to be able to handle pressing submit when creating assignments
 
-        console.log('assignment data - ', formData); //testing
+        console.log('assignment data - ', formData); // console output for testing purposes
     };
 
     
@@ -26,6 +26,9 @@ function AddAssignment({ onCancel }) {
             <h2>Create New Assignment</h2>
             <form onSubmit={handleSubmit}>
                 <div>
+
+                    {/* Table structure layout / form setup */}
+
                     <label>Title:</label>
                     <input
                         type="text"
