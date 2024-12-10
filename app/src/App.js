@@ -2,7 +2,7 @@ import ListOfAssignments from './ListOfAssignments';
 
 function App() {
   return (
-    <ListOfAssignments/>
+    <ListOfAssignments />
   );
 }
 
