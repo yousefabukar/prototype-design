@@ -6,7 +6,6 @@ import cors from 'cors';
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
@@ -21,6 +20,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+// ASSIGNMENT ENDPOINTS
 
 // Get all assignments
 app.get('/api/assignments', async (req, res) => {
@@ -65,45 +66,30 @@ app.post('/api/assignments', upload.single('image_file'), async (req, res) => {
     }
 });
 
-// Update assignment
-app.put('/api/assignments/:id', upload.single('image_file'), async (req, res) => {
+
+// Get specific assignment
+app.get('/api/assignments/:id', async (req, res) => {
     try {
-        const {
-            assignment_title,
-            module_name,
-            due_date,
-            vcpu_value,
-            memory_value
-        } = req.body;
+        const [assignment] = await db.query(
+            'SELECT * FROM assignments WHERE assignment_id = ?',
+            [req.params.id]
+        );
 
-        const image_filepath = req.file ? `/uploads/${req.file.filename}` : undefined;
-
-        let query = 'UPDATE assignments SET assignment_title = ?, module_name = ?, due_date = ?, vcpu_value = ?, memory_value = ?';
-        let params = [assignment_title, module_name, due_date, vcpu_value, memory_value];
-
-        if (image_filepath) {
-            query += ', image_filepath = ?';
-            params.push(image_filepath);
-        }
-
-        query += ' WHERE assignment_id = ?';
-        params.push(req.params.id);
-
-        const [result] = await db.query(query, params);
-
-        if (result.affectedRows === 0) {
+        if (assignment.length === 0) {
             return res.status(404).json({ error: 'Assignment not found' });
         }
 
-        res.json({ message: 'Assignment updated successfully' });
+        res.json(assignment[0]);
     } catch (err) {
-        console.error('Error updating assignment:', err);
-        res.status(500).json({ error: 'Error updating assignment' });
+        console.error('Error fetching assignment:', err);
+        res.status(500).json({ error: 'Error fetching assignment' });
     }
 });
 
-// Get submissions
-app.get('/api/submissions', async (req, res) => {
+// SUBMISSION ENDPOINTS
+
+// Get all submissions for an assignment
+app.get('/api/assignments/:assignmentId/submissions', async (req, res) => {
     try {
         const [submissions] = await db.query(`
             SELECT 
@@ -111,11 +97,12 @@ app.get('/api/submissions', async (req, res) => {
                 name,
                 submission_date,
                 tests_passed,
-                status,
-                created_at
+                status
             FROM student_submissions
-            ORDER BY created_at DESC
-        `);
+            WHERE assignment_id = ?
+            ORDER BY submission_date DESC`,
+            [req.params.assignmentId]
+        );
         res.json(submissions);
     } catch (err) {
         console.error('Error fetching submissions:', err);
@@ -135,8 +122,14 @@ app.get('/api/submissions/:id/details', async (req, res) => {
             return res.status(404).json({ error: 'Submission not found' });
         }
 
+        // Parse result_files JSON if it exists
         if (submission[0].result_files) {
-            submission[0].result_files = JSON.parse(submission[0].result_files);
+            try {
+                submission[0].result_files = JSON.parse(submission[0].result_files);
+            } catch (error) {
+                console.error('Error parsing result_files JSON:', error);
+                submission[0].result_files = null;
+            }
         }
 
         res.json(submission[0]);
@@ -146,7 +139,37 @@ app.get('/api/submissions/:id/details', async (req, res) => {
     }
 });
 
-// Update submission grade
+// Start submission processing
+    //needs to be implemented the container thingy
+
+// Download submission result file
+app.get('/api/submissions/:id/files/:filename', async (req, res) => {
+    try {
+        const [submission] = await db.query(
+            'SELECT result_files FROM student_submissions WHERE submission_id = ?',
+            [req.params.id]
+        );
+
+        if (submission.length === 0) {
+            return res.status(404).json({ error: 'Submission not found' });
+        }
+
+        const results = JSON.parse(submission[0].result_files);
+        const file = results.files.find(f => f.name === req.params.filename);
+
+        if (!file) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+
+        // dummy file content returned here, but would return the actual file from the container thingy here
+        res.send(file.content);
+    } catch (err) {
+        console.error('Error downloading file:', err);
+        res.status(500).json({ error: 'Error downloading file' });
+    }
+});
+
+// Submit grade
 app.put('/api/submissions/:id/grade', async (req, res) => {
     try {
         const { mark, feedback } = req.body;
@@ -156,7 +179,11 @@ app.put('/api/submissions/:id/grade', async (req, res) => {
         }
 
         const [result] = await db.query(
-            'UPDATE student_submissions SET mark = ?, feedback = ?, status = "Graded" WHERE submission_id = ?',
+            `UPDATE student_submissions 
+             SET mark = ?, 
+                 feedback = ?,
+                 status = "Graded"
+             WHERE submission_id = ?`,
             [mark, feedback, req.params.id]
         );
 
@@ -164,10 +191,13 @@ app.put('/api/submissions/:id/grade', async (req, res) => {
             return res.status(404).json({ error: 'Submission not found' });
         }
 
-        res.json({ message: 'Submission graded successfully' });
+        res.json({
+            message: 'Submission graded successfully',
+            updatedFields: { mark, feedback }
+        });
     } catch (err) {
-        console.error('Error updating submission grade:', err);
-        res.status(500).json({ error: 'Error updating submission grade' });
+        console.error('Error updating grade:', err);
+        res.status(500).json({ error: 'Error updating grade' });
     }
 });
 
@@ -175,3 +205,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+export default app;
