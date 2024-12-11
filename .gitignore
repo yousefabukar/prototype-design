@@ -1,6 +1,10 @@
-target
 index.node
 **/node_modules
+**/target
+**/target-ra
+**/dist
 **/.DS_Store
 npm-debug.log*cargo.log
 cross.log
+.vscode
+**/build/artefact
