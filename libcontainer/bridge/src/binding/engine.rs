@@ -15,17 +15,7 @@ use zbus::Connection;
 type JsContainerPtr<'a> = JsBox<Arc<JsMutex<ContainerEngine<'a>>>>;
 
 impl Finalize for ContainerEngine<'static> {
-    fn finalize<'a, C: Context<'a>>(self, _: &mut C) {
-        RUNTIME.spawn(async move {
-            #[cfg(debug_assertions)]
-            self.cleanup()
-                .await
-                .expect("Cleanup of container engine failed");
-
-            #[cfg(not(debug_assertions))]
-            let _ = self.cleanup().await;
-        });
-    }
+    fn finalize<'a, C: Context<'a>>(self, _: &mut C) {}
 }
 
 pub struct JsContainerEngine;

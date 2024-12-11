@@ -9,17 +9,7 @@ use tokio::sync::Mutex;
 pub type JsImgPtr = JsBox<Arc<JsMutex<ContainerImg>>>;
 
 impl Finalize for ContainerImg {
-    fn finalize<'a, C: Context<'a>>(self, _: &mut C) {
-        RUNTIME.spawn(async move {
-            #[cfg(debug_assertions)]
-            self.cleanup()
-                .await
-                .expect("Cleanup of image extraction failed");
-
-            #[cfg(not(debug_assertions))]
-            let _ = self.cleanup().await;
-        });
-    }
+    fn finalize<'a, C: Context<'a>>(self, _: &mut C) {}
 }
 
 pub struct JsContainerImg;
