@@ -19,11 +19,14 @@ function EditAssignment({ assignment, onCancel, onSave }) {
    return (
        <div>
            <h2>Edit Assignment</h2>
-           <form onSubmit={handleSubmit}>
+         <form onSubmit={handleSubmit}>
                <div className="form-container">
+
                    <div className="form-column">
                        <div>
-                           <label>Title:</label>
+                           
+                           
+                        <label>Title:</label>
                            <input
                                type="text"
                                value={formData.title}
@@ -47,8 +50,7 @@ function EditAssignment({ assignment, onCancel, onSave }) {
                                value={formData.dueDate}
                                onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
                            />
-                       </div>
-
+                            </div>
                        <div>
                            <h3>Resources</h3>
                            <label>CPU:</label>
@@ -67,11 +69,13 @@ function EditAssignment({ assignment, onCancel, onSave }) {
                            <label>Memory:</label>
                            <select
                                value={formData.resources.memory}
+
                                onChange={(e) => setFormData({
                                    ...formData,
                                    resources: {...formData.resources, memory: e.target.value}
                                })}
                            >
+
                                <option value="1GB">1GB</option>
                                <option value="2GB">2GB</option>
                                <option value="4GB">4GB</option>
@@ -83,8 +87,8 @@ function EditAssignment({ assignment, onCancel, onSave }) {
                <div>
                    <button onClick={onCancel}>Cancel</button>
                    <button type="submit">Save Changes</button>
-               </div>
-           </form>
+        </div>
+    </form>
        </div>
    );
 }
