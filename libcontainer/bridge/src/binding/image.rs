@@ -68,4 +68,25 @@ impl JsContainerImg {
 
         Ok(promise)
     }
+
+    pub fn cleanup(mut ctx: FunctionContext) -> JsResult<JsPromise> {
+        let img = (**ctx.this::<JsImgPtr>()?).clone();
+
+        let channel = ctx.channel();
+        let (deferred, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let ex = img.lock().await.cleanup().await;
+
+            deferred.settle_with(&channel, move |mut ctx| {
+                if let Err(err) = ex {
+                    ctx.throw_error(err.to_string())
+                } else {
+                    Ok(ctx.undefined())
+                }
+            });
+        });
+
+        Ok(promise)
+    }
 }

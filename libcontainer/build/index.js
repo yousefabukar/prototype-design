@@ -14,6 +14,10 @@ class ContainerImage {
     async verify() {
         return await _root.binding__containerimg_verify.call(this.inner);
     }
+
+    async cleanup() {
+        return await _root.binding__containerimg_cleanup.call(this.inner);
+    }
 }
 
 class ContainerEngine {
@@ -39,6 +43,10 @@ class ContainerEngine {
 
     async getResults() {
         return await _root.binding__containerengine_testoutput.call(this.inner);
+    }
+
+    async cleanup() {
+        return await _root.binding__containerengine_cleanup.call(this.inner);
     }
 }
 

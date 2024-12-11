@@ -15,6 +15,7 @@ fn main(mut ctx: ModuleContext) -> NeonResult<()> {
     ctx.export_function("binding__containerimg_new", JsContainerImg::js_new)?;
     ctx.export_function("binding__containerimg_extract", JsContainerImg::extract)?;
     ctx.export_function("binding__containerimg_verify", JsContainerImg::verify)?;
+    ctx.export_function("binding__containerimg_cleanup", JsContainerImg::cleanup)?;
 
     ctx.export_function("binding__containerengine_new", JsContainerEngine::js_new)?;
     ctx.export_function(
@@ -24,6 +25,10 @@ fn main(mut ctx: ModuleContext) -> NeonResult<()> {
     ctx.export_function(
         "binding__containerengine_testoutput",
         JsContainerEngine::test_output,
+    )?;
+    ctx.export_function(
+        "binding__containerengine_cleanup",
+        JsContainerEngine::cleanup,
     )?;
 
     Ok(())

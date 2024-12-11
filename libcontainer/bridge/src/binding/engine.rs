@@ -99,4 +99,25 @@ impl JsContainerEngine {
 
         Ok(promise)
     }
+
+    pub fn cleanup(mut ctx: FunctionContext) -> JsResult<JsPromise> {
+        let engine_ptr = (**ctx.this::<JsContainerPtr>()?).clone();
+
+        let channel = ctx.channel();
+        let (deferred, promise) = ctx.promise();
+
+        RUNTIME.spawn(async move {
+            let res = engine_ptr.lock().await.cleanup().await;
+
+            deferred.settle_with(&channel, move |mut ctx| {
+                if let Err(err) = res {
+                    ctx.throw_error(err.to_string())
+                } else {
+                    Ok(ctx.undefined())
+                }
+            });
+        });
+
+        Ok(promise)
+    }
 }

@@ -57,7 +57,7 @@ impl<'a> ContainerEngine<'a> {
         Ok(self.proxy.test_output(self.handle.clone()).await?)
     }
 
-    pub async fn cleanup(self) -> Result<(), ContainerError> {
+    pub async fn cleanup(&self) -> Result<(), ContainerError> {
         self.img.cleanup().await?;
         Ok(())
     }

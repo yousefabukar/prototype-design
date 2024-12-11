@@ -50,8 +50,8 @@ impl ContainerImg {
             && !join_img_abs!(self.path, manifest.test_manifest).exists())
     }
 
-    pub async fn cleanup(self) -> Result<(), ContainerError> {
-        tokio::fs::remove_dir_all(self.path)
+    pub async fn cleanup(&self) -> Result<(), ContainerError> {
+        tokio::fs::remove_dir_all(&self.path)
             .await
             .map_err(|_| ContainerError::FileNotFound)
     }
