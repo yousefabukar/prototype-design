@@ -4,7 +4,7 @@ function AddAssignment({ onCancel }) {
     const [formData, setFormData] = useState({
         title: '',
         module: '',
-        dueDate: '',            // state initialization for assignment creation
+        dueDate: '',            // State initialization for assignment creation
         resources: {
             cpu: '1 vCPU',
             memory: '1GB'

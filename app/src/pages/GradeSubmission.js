@@ -83,7 +83,6 @@ export default function GradeSubmission({ studentId, onBack }) {
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <button>Save Draft</button>
                 <button className="bg-blue-500 text-white">Submit Grade</button>
               </div>
             </div>
