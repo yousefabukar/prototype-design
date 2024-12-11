@@ -1,94 +1,131 @@
-import { useState } from 'react';
-import './styles.css';
-import AddAssignment from './pages/AddAssignments.js';
+import { useState, useEffect } from 'react';
+import AddAssignment from './pages/AddAssignments';
 import SubmissionsList from './pages/SubmissionsList';
 
-const assignments = [           
-  {
-      id: 1,
-      title: "Homework",
-      module: "Functional Programming",
-      dueDate: "28-11-2024",
-  },
-  {             
-      id: 2,
-      title: "News Classifier",
-      module: "Object Oriented Programming",
-      dueDate: "17-1-2024",
-  },
-  {
-      id: 3,
-      title: "Server & Client Firewall Rules",
-      module: "Operating Systems & System Programming",
-      dueDate: "19-10-2024",
-  },
-];
-
 function ListOfAssignments() {
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showSubmissions, setShowSubmissions] = useState(false);
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [showSubmissions, setShowSubmissions] = useState(false);
+    const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [assignments, setAssignments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  if (showSubmissions) {
-    return <SubmissionsList onBack={() => setShowSubmissions(false)} />;
-  }
+    const fetchAssignments = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/api/assignments');
+            if (!response.ok) {
+                throw new Error('Failed to fetch assignments');
+            }
+            const data = await response.json();
+            setAssignments(data);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching assignments:', err);
+            setError('Failed to fetch assignments');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  if (showAddForm) {
-    return <AddAssignment onCancel={() => setShowAddForm(false)} />;
-  }
+    useEffect(() => {
+        fetchAssignments();
+    }, []);
 
-  return (
-    <div>
-      <div style={{ 
-        display: 'flex',
-        justifyContent: 'space-between',      
-        alignItems: 'center',
-        marginBottom: '20px'
-      }}>
+    if (showSubmissions && selectedAssignment) {
+        return (
+            <SubmissionsList 
+                assignmentId={selectedAssignment.assignment_id}
+                onBack={() => {
+                    setShowSubmissions(false);
+                    setSelectedAssignment(null);
+                }}
+            />
+        );
+    }
+
+    if (showAddForm) {
+        return (
+            <AddAssignment
+                onCancel={() => setShowAddForm(false)}
+                onSuccess={() => {
+                    setShowAddForm(false);
+                    fetchAssignments();
+                }}
+            />
+        );
+    }
+
+    if (loading) return <div>Loading assignments...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    return (
         <div>
-          <h1>FNCS (Flexible New Code Submission)</h1>
-          <h2>Assignment List</h2>
+            <div style={{ 
+                display: 'flex',
+                justifyContent: 'space-between',      
+                alignItems: 'center',
+                marginBottom: '20px'
+            }}>
+                <div>
+                    <h1>FNCS (Flexible New Code Submission)</h1>
+                    <h2>Assignment List</h2>
+                </div>
+                <button 
+                    onClick={() => setShowAddForm(true)}
+                    style={{
+                        backgroundColor: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                    }}
+                >
+                    + Add New Assignment
+                </button>
+            </div>
+            <div>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Module</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {assignments.map(assignment => (
+                            <tr key={assignment.assignment_id}>
+                                <td>{assignment.assignment_title}</td>
+                                <td>{assignment.module_name}</td>
+                                <td>{new Date(assignment.due_date).toLocaleDateString()}</td>
+                                <td>
+                                    <button 
+                                        onClick={() => {
+                                            setSelectedAssignment(assignment);
+                                            setShowSubmissions(true);
+                                        }}
+                                        style={{
+                                            backgroundColor: '#007bff',
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '5px 10px',
+                                            borderRadius: '4px',
+                                            marginRight: '5px'
+                                        }}
+                                    >
+                                        View Submissions
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <button 
-          onClick={() => setShowAddForm(true)}
-          style={{
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
-        >
-          + Add New Assignment
-        </button>
-      </div>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Module</th>
-              <th>Due Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {assignments.map(assignment => (
-              <tr key={assignment.id}>
-                <td>{assignment.title}</td>    
-                <td>{assignment.module}</td>
-                <td>{assignment.dueDate}</td>
-                <td>
-                  <button onClick={() => setShowSubmissions(true)}>View Submissions</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default ListOfAssignments;
