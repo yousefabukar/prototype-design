@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use zbus::zvariant::Type;
 
-pub const MANIFEST_URI: &str = "/root/manifest.json";
+pub const MANIFEST_URI: &str = "/var/fncs/manifest.json";
 
 #[derive(Type, Serialize, Deserialize)]
 pub struct ImageOptions {
