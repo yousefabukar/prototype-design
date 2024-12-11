@@ -72,7 +72,7 @@ function SubmissionsList({ onBack }) {
                             </td>
                         </tr>
                     ))}
-                </tbody>
+                    </tbody>
             </table>
         </div>
     );

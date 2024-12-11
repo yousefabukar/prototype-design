@@ -56,11 +56,12 @@ function AddAssignment({ onCancel }) {
                 </div>
 
                 <div>
-                    <label>Image File:</label>
-                    <input
-                        type="file"
-                        onChange={(e) => console.log('Image File:', e.target.files)}
-                    />
+                <label>Image File:</label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => console.log('Image File:', e.target.files)}
+                />
                 </div>
 
                 <div>
