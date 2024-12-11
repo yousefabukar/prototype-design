@@ -82,3 +82,31 @@ impl ContainerImg {
         Ok(new_img)
     }
 }
+
+#[test]
+#[allow(clippy::unwrap_used)]
+fn test_compression() {
+    use std::io::{Cursor, Read};
+    use tar::{Archive, Builder, Header};
+
+    let mut test_file = Header::new_gnu();
+    test_file.set_path("test.txt").unwrap();
+    test_file.set_size(9);
+    test_file.set_cksum();
+
+    let test_data: &[u8] = &[1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    let mut builder = Builder::new(Vec::new());
+    builder.append(&test_file, test_data).unwrap();
+    builder.finish().unwrap();
+
+    let archive_data = builder.into_inner().unwrap();
+
+    let mut archive = Archive::new(Cursor::new(archive_data));
+    let file = archive.entries().unwrap().next().unwrap().unwrap();
+
+    assert_eq!(file.path().unwrap().to_str().unwrap(), "test.txt");
+
+    let bytes = file.bytes().map(|i| i.unwrap()).collect::<Vec<_>>();
+    assert_eq!(bytes.as_slice(), test_data);
+}
