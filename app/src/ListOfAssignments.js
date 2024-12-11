@@ -2,8 +2,6 @@ import { useState } from 'react';
 import './styles.css';
 import AddAssignment from './pages/AddAssignments.js';
 import SubmissionsList from './pages/SubmissionsList';
-import EditAssignment from './pages/EditAssignment.js';
-import GradeSubmission from './pages/GradeSubmission.js';
 
 const assignments = [           
   {
@@ -13,7 +11,7 @@ const assignments = [
       dueDate: "28-11-2024",
   },
   {             
-      id: 2,            /* dummy data for testing */
+      id: 2,
       title: "News Classifier",
       module: "Object Oriented Programming",
       dueDate: "17-1-2024",
@@ -26,30 +24,15 @@ const assignments = [
   },
 ];
 
-
 function ListOfAssignments() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showSubmissions, setShowSubmissions] = useState(false);
-  const [editingAssignment, setEditingAssignment] = useState(null);
-
-  if (editingAssignment) {
-    return (
-      <EditAssignment 
-        assignment={editingAssignment}
-        onCancel={() => setEditingAssignment(null)}
-        onSave={(updatedData) => {
-          console.log('Updated assignment:', updatedData);
-          setEditingAssignment(null);
-        }}
-      />
-    );
-  }
 
   if (showSubmissions) {
     return <SubmissionsList onBack={() => setShowSubmissions(false)} />;
   }
 
-  else if (showAddForm) {
+  if (showAddForm) {
     return <AddAssignment onCancel={() => setShowAddForm(false)} />;
   }
 
@@ -61,8 +44,10 @@ function ListOfAssignments() {
         alignItems: 'center',
         marginBottom: '20px'
       }}>
-        <div> <h1>FNCS (Flexible New Code Submission)</h1>
-              <h2>Assignment List</h2> </div>
+        <div>
+          <h1>FNCS (Flexible New Code Submission)</h1>
+          <h2>Assignment List</h2>
+        </div>
         <button 
           onClick={() => setShowAddForm(true)}
           style={{
@@ -77,34 +62,33 @@ function ListOfAssignments() {
         >
           + Add New Assignment
         </button>
-        </div>
-        <div>
+      </div>
+      <div>
         <table>
           <thead>
-          <tr>
-          <th>Title</th>
-          <th>Module</th>
-          <th>Due Date</th>
-          <th>Options</th>
+            <tr>
+              <th>Title</th>
+              <th>Module</th>
+              <th>Due Date</th>
+              <th>Actions</th>
             </tr>
-            </thead>
-            <tbody>
-              {assignments.map(assignment => (
-                <tr key={assignment.id}>
-              <td>{assignment.title}</td>    
-              <td>{assignment.module}</td>
-              <td>{assignment.dueDate}</td>
-              <td>
-                <button onClick={() => setShowSubmissions(true)}>View Submissions</button>
-                <button onClick={() => setEditingAssignment(assignment)}>Edit</button>
-                  </td>
-            </tr>
+          </thead>
+          <tbody>
+            {assignments.map(assignment => (
+              <tr key={assignment.id}>
+                <td>{assignment.title}</td>    
+                <td>{assignment.module}</td>
+                <td>{assignment.dueDate}</td>
+                <td>
+                  <button onClick={() => setShowSubmissions(true)}>View Submissions</button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-   );
+  );
 }
 
 export default ListOfAssignments;

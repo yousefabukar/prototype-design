@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import GradeSubmission from './GradeSubmission.js';
 
 function SubmissionsList({ onBack }) {
+    const [isProcessing, setIsProcessing] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
-    
-    const submissions = [
+    const [submissions, setSubmissions] = useState([
         {
             id: 1,
             submissionId: "172",
@@ -13,7 +13,7 @@ function SubmissionsList({ onBack }) {
             submissionDate: "2024-02-12",
             testsCompleted: 15,
             testsPassed: 12,
-            status: "Completed"
+            status: "Incomplete"
         },
         {
             id: 2,
@@ -23,7 +23,7 @@ function SubmissionsList({ onBack }) {
             submissionDate: "2024-02-11",
             testsCompleted: 15,
             testsPassed: 15,
-            status: "Completed"
+            status: "Incomplete"
         },
         {
             id: 3,
@@ -33,21 +33,51 @@ function SubmissionsList({ onBack }) {
             submissionDate: "2024-02-20",
             testsCompleted: 13,
             testsPassed: 15,
-            status: "Completed"
+            status: "Incomplete"
         },
-    ];
+    ]);
+
+    const handleMarkAll = () => {
+        setIsProcessing(true);
+        setTimeout(() => {
+            setSubmissions(submissions.map(sub => ({
+                ...sub,
+                status: "Complete"
+            })));
+            setIsProcessing(false);
+        }, 2000);
+    };
 
     if (selectedStudent) {
         return <GradeSubmission 
-            studentId={selectedStudent.studentId} 
+            studentId={selectedStudent.studentId}
             onBack={() => setSelectedStudent(null)}
         />;
     }
 
     return (
         <div>
-            <h1>Student Submissions</h1>
-            <button onClick={onBack}>Back</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h1>Student Submissions</h1>
+                <div>
+                    <button onClick={onBack} style={{ marginRight: '10px' }}>Back</button>
+                    <button 
+                        onClick={handleMarkAll}
+                        style={{
+                            backgroundColor: '#4CAF50',
+                            color: 'white',
+                            border: 'none',
+                            padding: '10px 20px',
+                            borderRadius: '4px',
+                            cursor: isProcessing ? 'not-allowed' : 'pointer',
+                            opacity: isProcessing ? 0.7 : 1
+                        }}
+                        disabled={isProcessing}
+                    >
+                        {isProcessing ? 'Processing Pipeline...' : 'Mark All Submissions'}
+                    </button>
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -68,11 +98,24 @@ function SubmissionsList({ onBack }) {
                             <td>{submission.testsPassed}/{submission.testsCompleted}</td>
                             <td>{submission.status}</td>
                             <td>
-                                <button onClick={() => setSelectedStudent(submission)}>Mark</button>
+                                {submission.status === "Complete" && (
+                                    <button 
+                                        onClick={() => setSelectedStudent(submission)}
+                                        style={{
+                                            backgroundColor: '#007bff',
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '5px 10px',
+                                            borderRadius: '4px'
+                                        }}
+                                    >
+                                        Mark
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}
-                    </tbody>
+                </tbody>
             </table>
         </div>
     );
