@@ -1,0 +1,17 @@
+{
+    "name": "libcontainer-bridge",
+    "version": "0.1.0",
+    "description": "Node.JS bridge for libcontainer",
+    "main": "index.node",
+    "scripts": {},
+    "author": "Ruhaan Kadri",
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/yousefabukar/prototype-design.git"
+    },
+    "bugs": {
+        "url": "https://github.com/yousefabukar/prototype-design/issues"
+    },
+    "homepage": "https://github.com/yousefabukar/prototype-design#readme"
+}
