@@ -1,59 +1,69 @@
-import React, { useState } from 'react';
-import GradeSubmission from './GradeSubmission.js';
+import React, { useState, useEffect } from 'react';
+import GradeSubmission from './GradeSubmission';
 
-function SubmissionsList({ onBack }) {
+function SubmissionsList({ assignmentId, onBack }) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState(null);
-    const [submissions, setSubmissions] = useState([
-        {
-            id: 1,
-            submissionId: "172",
-            studentId: "23982",
-            studentName: "Ruhaan Kadri",
-            submissionDate: "2024-02-12",
-            testsCompleted: 15,
-            testsPassed: 12,
-            status: "Incomplete"
-        },
-        {
-            id: 2,
-            submissionId: "1002",
-            studentId: "24015",
-            studentName: "Nisar Ahmed",
-            submissionDate: "2024-02-11",
-            testsCompleted: 15,
-            testsPassed: 15,
-            status: "Incomplete"
-        },
-        {
-            id: 3,
-            submissionId: "2394",
-            studentId: "23948",
-            studentName: "Yousef Abukar",
-            submissionDate: "2024-02-20",
-            testsCompleted: 13,
-            testsPassed: 15,
-            status: "Incomplete"
-        },
-    ]);
+    const [submissions, setSubmissions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const handleMarkAll = () => {
+    const fetchSubmissions = async () => {
+        try {
+            if (!assignmentId) {
+                throw new Error('Assignment ID is required');
+            }
+
+            console.log('Fetching submissions for assignment:', assignmentId);
+            const response = await fetch(`http://localhost:3000/api/assignments/${assignmentId}/submissions`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch submissions');
+            }
+            const data = await response.json();
+            console.log('Received submissions:', data);
+            setSubmissions(data);
+        } catch (err) {
+            console.error('Error fetching submissions:', err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSubmissions();
+    }, []);
+
+    const handleMarkAll = async () => {
         setIsProcessing(true);
-        setTimeout(() => {
-            setSubmissions(submissions.map(sub => ({
-                ...sub,
-                status: "Complete"
-            })));
+        try {
+            const processPromises = submissions.map(sub => 
+                fetch(`http://localhost:3000/api/submissions/${sub.submission_id}/process`, {
+                    method: 'POST'
+                })
+            );
+            await Promise.all(processPromises);
+            await fetchSubmissions();
+        } catch (err) {
+            console.error('Error processing submissions:', err);
+        } finally {
             setIsProcessing(false);
-        }, 2000);
+        }
     };
 
     if (selectedStudent) {
         return <GradeSubmission 
-            studentId={selectedStudent.studentId}
-            onBack={() => setSelectedStudent(null)}
+            submissionId={selectedStudent.submission_id}
+            onBack={() => {
+                setSelectedStudent(null);
+                fetchSubmissions();
+            }}
         />;
     }
+
+    if (loading) return <div>Loading submissions...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div>
@@ -63,16 +73,12 @@ function SubmissionsList({ onBack }) {
                     <button onClick={onBack} style={{ marginRight: '10px' }}>Back</button>
                     <button 
                         onClick={handleMarkAll}
+                        disabled={isProcessing}
                         style={{
                             backgroundColor: '#4CAF50',
                             color: 'white',
-                            border: 'none',
-                            padding: '10px 20px',
-                            borderRadius: '4px',
-                            cursor: isProcessing ? 'not-allowed' : 'pointer',
                             opacity: isProcessing ? 0.7 : 1
                         }}
-                        disabled={isProcessing}
                     >
                         {isProcessing ? 'Processing Pipeline...' : 'Mark All Submissions'}
                     </button>
@@ -91,22 +97,19 @@ function SubmissionsList({ onBack }) {
                 </thead>
                 <tbody>
                     {submissions.map(submission => (
-                        <tr key={submission.id}>
-                            <td>{submission.submissionId}</td>
-                            <td>{submission.studentName}</td>
-                            <td>{submission.submissionDate}</td>
-                            <td>{submission.testsPassed}/{submission.testsCompleted}</td>
+                        <tr key={submission.submission_id}>
+                            <td>{submission.submission_id}</td>
+                            <td>{submission.name}</td>
+                            <td>{new Date(submission.submission_date).toLocaleDateString()}</td>
+                            <td>{submission.tests_passed}</td>
                             <td>{submission.status}</td>
                             <td>
-                                {submission.status === "Complete" && (
+                                {submission.status === "Processed" && (
                                     <button 
                                         onClick={() => setSelectedStudent(submission)}
                                         style={{
                                             backgroundColor: '#007bff',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '5px 10px',
-                                            borderRadius: '4px'
+                                            color: 'white'
                                         }}
                                     >
                                         Mark

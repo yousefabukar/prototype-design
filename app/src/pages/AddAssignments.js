@@ -2,38 +2,61 @@ import { useState } from 'react';
 
 function AddAssignment({ onCancel }) {
     const [formData, setFormData] = useState({
-        title: '',
-        module: '',
-        dueDate: '',            // State initialization for assignment creation
-        resources: {
-            cpu: '1 vCPU',
-            memory: '1GB'
-        }
+        assignment_title: '',
+        module_name: '',
+        due_date: '',
+        vcpu_value: '1',
+        memory_value: '1'
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
-                // this will be connected to the backend to be able to handle pressing submit when creating assignments
+        try {
+            const submitData = new FormData();
+            submitData.append('assignment_title', formData.assignment_title);
+            submitData.append('module_name', formData.module_name);
+            submitData.append('due_date', formData.due_date);
+            submitData.append('vcpu_value', formData.vcpu_value);
+            submitData.append('memory_value', formData.memory_value);
 
-        console.log('assignment data - ', formData); // console output for testing purposes
+            if (selectedFile) {
+                submitData.append('image_file', selectedFile);
+            }
+
+            const response = await fetch('http://localhost:3000/api/assignments', {
+                method: 'POST',
+                body: submitData
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create assignment');
+            }
+
+            onCancel(); // Close form after successful submission
+            window.location.reload(); // Refresh the page to show new assignment
+        } catch (error) {
+            console.error('Error creating assignment:', error);
+            alert('Failed to create assignment');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    
     return (
         <div>
             <h2>Create New Assignment</h2>
             <form onSubmit={handleSubmit}>
                 <div>
-
-                    {/* Table structure layout / form setup */}
-
                     <label>Title:</label>
                     <input
                         type="text"
-                        value={formData.title}
-                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        value={formData.assignment_title}
+                        onChange={(e) => setFormData({...formData, assignment_title: e.target.value})}
+                        required
                     />
                 </div>
 
@@ -41,8 +64,9 @@ function AddAssignment({ onCancel }) {
                     <label>Module Code:</label>
                     <input
                         type="text"
-                        value={formData.moduleCode}
-                        onChange={(e) => setFormData({...formData, moduleCode: e.target.value})}
+                        value={formData.module_name}
+                        onChange={(e) => setFormData({...formData, module_name: e.target.value})}
+                        required
                     />
                 </div>
 
@@ -50,54 +74,50 @@ function AddAssignment({ onCancel }) {
                     <label>Due Date:</label>
                     <input
                         type="date"
-                        value={formData.dueDate}
-                        onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
+                        value={formData.due_date}
+                        onChange={(e) => setFormData({...formData, due_date: e.target.value})}
+                        required
                     />
                 </div>
 
                 <div>
-                <label>Image File:</label>
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => console.log('Image File:', e.target.files)}
-                />
+                    <label>Image File:</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setSelectedFile(e.target.files[0])}
+                    />
                 </div>
 
                 <div>
                     <h3>Resources</h3>
                     <label>CPU:</label>
                     <select
-                        value={formData.resources.cpu}
-                        onChange={(e) => setFormData({
-                            ...formData,
-                            resources: {...formData.resources, cpu: e.target.value}
-                        })}
+                        value={formData.vcpu_value}
+                        onChange={(e) => setFormData({...formData, vcpu_value: e.target.value})}
                     >
-                        <option value="1.0 vCPU">1.0 vCPU (Default)</option>
-                        <option value="2.0 vCPU">2.0 vCPU</option>
-                        <option value=".0 vCPU">4.0 vCPU</option>
+                        <option value="1">1.0 vCPU (Default)</option>
+                        <option value="2">2.0 vCPU</option>
+                        <option value="4">4.0 vCPU</option>
                     </select>
 
                     <label>Memory:</label>
                     <select
-                        value={formData.resources.memory}
-                        onChange={(e) => setFormData({
-                            ...formData,
-                            resources: {...formData.resources, memory: e.target.value}
-                        })}
+                        value={formData.memory_value}
+                        onChange={(e) => setFormData({...formData, memory_value: e.target.value})}
                     >
-                        <option value="1GB">1GB (Default)</option>
-                        <option value="2GB">2GB</option>
-                        <option value="4GB">4GB</option>
+                        <option value="1">1GB (Default)</option>
+                        <option value="2">2GB</option>
+                        <option value="4">4GB</option>
                     </select>
                 </div>
 
                 <div className="button-group">
-                    <button onClick={onCancel}>Cancel</button>
-                    <button onClick={handleSubmit}>Create Assignment</button>
+                    <button type="button" onClick={onCancel} disabled={isSubmitting}>Cancel</button>
+                    <button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Creating...' : 'Create Assignment'}
+                    </button>
                 </div>
-
             </form>
         </div>
     );
