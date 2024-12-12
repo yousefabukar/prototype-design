@@ -3,7 +3,7 @@ import db from './config/db.js';
 import multer from 'multer';
 import path from 'path';
 import cors from 'cors';
-//import { ContainerEngine, ContainerImage } from '../libcontainer/build/index.js';
+import { ContainerEngine, ContainerImage } from '../libcontainer/build/index.js';
 
 const app = express();
 
@@ -300,7 +300,7 @@ app.put('/api/submissions/:id/grade', async (req, res) => {
             await logToDatabase('error', `Submission not found for grading: ID ${req.params.id}`);
             return res.status(404).json({ error: 'Submission not found' });
         }
-
+        await logToDatabase('info', `Successfully graded submission ${req.params.id} with mark ${mark}`);
         res.json({
             message: 'Submission graded successfully',
             updatedFields: { mark, feedback }
