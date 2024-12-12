@@ -84,7 +84,7 @@ function AddAssignment({ onCancel }) {
                     <label>Image File:</label>
                     <input
                         type="file"
-                        accept="image/*"
+                        accept="*.tar"
                         onChange={(e) => setSelectedFile(e.target.files[0])}
                     />
                 </div>
