@@ -188,6 +188,8 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
         }
 
         await image.cleanup();
+
+        res.status(200).json({ status: "OK", message: "Updated database successfully." });
     } catch (error) {
         console.error(`Error executing submission: ${error}`);
         res.status(500).json({ error: `Error executing submission: ${error}` });
