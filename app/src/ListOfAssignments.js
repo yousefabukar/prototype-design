@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import AddAssignment from './pages/AddAssignments';
 import SubmissionsList from './pages/SubmissionsList';
+import LogsView from './pages/LogsView';
 
 function ListOfAssignments() {
     const [showAddForm, setShowAddForm] = useState(false);
@@ -9,6 +10,7 @@ function ListOfAssignments() {
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showLogs, setShowLogs] = useState(null);
 
     const fetchAssignments = async () => {
         try {
@@ -31,9 +33,17 @@ function ListOfAssignments() {
         fetchAssignments();
     }, []);
 
+    if (showLogs) {
+        return (<LogsView onBack={() => {
+            setShowLogs(false);
+            setShowSubmissions(false);
+            setSelectedAssignment(null);
+        }} />)
+    }
+
     if (showSubmissions && selectedAssignment) {
         return (
-            <SubmissionsList 
+            <SubmissionsList
                 assignmentId={selectedAssignment.assignment_id}
                 onBack={() => {
                     setShowSubmissions(false);
@@ -60,9 +70,9 @@ function ListOfAssignments() {
 
     return (
         <div>
-            <div style={{ 
+            <div style={{
                 display: 'flex',
-                justifyContent: 'space-between',      
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '20px'
             }}>
@@ -70,7 +80,7 @@ function ListOfAssignments() {
                     <h1>FNCS (Flexible New Code Submission)</h1>
                     <h2>Assignment List</h2>
                 </div>
-                <button 
+                <button
                     onClick={() => setShowAddForm(true)}
                     style={{
                         backgroundColor: '#4CAF50',
@@ -102,7 +112,7 @@ function ListOfAssignments() {
                                 <td>{assignment.module_name}</td>
                                 <td>{new Date(assignment.due_date).toLocaleDateString()}</td>
                                 <td>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             setSelectedAssignment(assignment);
                                             setShowSubmissions(true);
@@ -124,6 +134,12 @@ function ListOfAssignments() {
                     </tbody>
                 </table>
             </div>
+
+            <button style={{ float: "right" }} onClick={() => {
+                setShowLogs(true);
+            }}>
+                View Debug Logs
+            </button>
         </div>
     );
 }
