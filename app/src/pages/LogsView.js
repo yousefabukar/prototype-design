@@ -5,10 +5,12 @@ function LogsView({ onBack }) {
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState(null);
 
-    useEffect(async () => {
-        const data = await (await fetch("http://localhost:3000/api/logs")).json();
-        setLogs(data.logs);
-        setLoading(false);
+    useEffect(() => {
+        (async () => {
+            const data = await (await fetch("http://localhost:3000/api/logs")).json();
+            setLogs(data.logs);
+            setLoading(false);
+        })();
     }, []);
 
     if (loading) {
