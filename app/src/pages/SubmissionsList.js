@@ -90,7 +90,6 @@ function SubmissionsList({ assignmentId, onBack }) {
                         <th>Submission ID</th>
                         <th>Name</th>
                         <th>Submission Date</th>
-                        <th>Tests Passed</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -101,7 +100,6 @@ function SubmissionsList({ assignmentId, onBack }) {
                             <td>{submission.submission_id}</td>
                             <td>{submission.name}</td>
                             <td>{new Date(submission.submission_date).toLocaleDateString()}</td>
-                            <td>{submission.tests_passed}</td>
                             <td>{submission.status}</td>
                             <td>
                                 {submission.status === "Processed" && (
@@ -112,7 +110,7 @@ function SubmissionsList({ assignmentId, onBack }) {
                                             color: 'white'
                                         }}
                                     >
-                                        Mark
+                                        View
                                     </button>
                                 )}
                             </td>
