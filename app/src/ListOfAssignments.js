@@ -124,6 +124,10 @@ function ListOfAssignments() {
                     </tbody>
                 </table>
             </div>
+
+            <button style={{ float: "right" }}>
+                View Debug Logs
+            </button>
         </div>
     );
 }
