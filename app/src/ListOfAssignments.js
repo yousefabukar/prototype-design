@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import AddAssignment from './pages/AddAssignments';
 import SubmissionsList from './pages/SubmissionsList';
+import LogsView from './pages/LogsView';
 
 function ListOfAssignments() {
     const [showAddForm, setShowAddForm] = useState(false);
@@ -9,6 +10,7 @@ function ListOfAssignments() {
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showLogs, setShowLogs] = useState(null);
 
     const fetchAssignments = async () => {
         try {
@@ -30,6 +32,14 @@ function ListOfAssignments() {
     useEffect(() => {
         fetchAssignments();
     }, []);
+
+    if (showLogs) {
+        return (<LogsView onBack={() => {
+            setShowLogs(false);
+            setShowSubmissions(false);
+            setSelectedAssignment(null);
+        }} />)
+    }
 
     if (showSubmissions && selectedAssignment) {
         return (
@@ -125,7 +135,9 @@ function ListOfAssignments() {
                 </table>
             </div>
 
-            <button style={{ float: "right" }}>
+            <button style={{ float: "right" }} onClick={() => {
+                setShowLogs(true);
+            }}>
                 View Debug Logs
             </button>
         </div>
