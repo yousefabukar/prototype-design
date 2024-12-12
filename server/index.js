@@ -29,7 +29,7 @@ const logToDatabase = async (type, message) => {
             'INSERT INTO observability (type, message, created_at) VALUES (?, ?, NOW())',
             [type, message]
         );
-        
+
         if (type === 'error') {
             console.error(message);
         } else {
@@ -45,20 +45,20 @@ const logToDatabase = async (type, message) => {
 app.get('/api/logs', async (req, res) => {
     try {
         const { type, limit = 100, offset = 0 } = req.query;
-        
+
         let query = 'SELECT * FROM observability';
         const queryParams = [];
-        
+
         if (type) {
             query += ' WHERE type = ?';
             queryParams.push(type);
         }
-        
+
         query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
         queryParams.push(Number(limit), Number(offset));
-        
+
         const [logs] = await db.query(query, queryParams);
-        
+
         res.json({
             logs,
             pagination: {
@@ -204,7 +204,7 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
 
         const [submissionList] = await db.query(`SELECT * FROM student_submissions WHERE assignment_id = ?`, [req.params.id]);
         await logToDatabase('info', `Processing ${submissionList.length} submissions for assignment ${req.params.id}`);
-        
+
         const engineList = [];
 
         for (const submission of submissionList) {
