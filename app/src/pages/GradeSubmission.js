@@ -100,7 +100,9 @@ function GradeSubmission({ submissionId, onBack }) {
                                 <th>Test Running Logs</th>
                             </tr>
                             <tr>
-                                <pre>{submission.logs !== null ? submission.logs : 'No test results available'}</pre>
+                                <pre style={{
+                                    padding: 20
+                                }}>{submission.logs !== null ? submission.logs : 'No test results available'}</pre>
                             </tr>
                         </tbody>
                     </table>
