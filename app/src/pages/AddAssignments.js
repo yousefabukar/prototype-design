@@ -98,7 +98,12 @@ function AddAssignment({ onCancel }) {
                     >
                         <option value="1">1.0 vCPU (Default)</option>
                         <option value="2">2.0 vCPU</option>
+                        <option value="3">3.0 vCPU</option>
                         <option value="4">4.0 vCPU</option>
+                        <option value="5">5.0 vCPU</option>
+                        <option value="6">6.0 vCPU</option>
+                        <option value="7">7.0 vCPU</option>
+                        <option value="8">8.0 vCPU</option>
                     </select>
 
                     <label>Memory:</label>
@@ -106,9 +111,10 @@ function AddAssignment({ onCancel }) {
                         value={formData.memory_value}
                         onChange={(e) => setFormData({...formData, memory_value: e.target.value})}
                     >
-                        <option value="1">1GB (Default)</option>
-                        <option value="2">2GB</option>
-                        <option value="4">4GB</option>
+                        <option value="128000000">128MB (Default)</option>
+                        <option value="256000000">256MB</option>
+                        <option value="512000000">512MB</option>
+                        <option value="1024000000">1GB</option>
                     </select>
                 </div>
 
