@@ -163,7 +163,7 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
 
             const [result] = await db.query(
                 `UPDATE student_submissions 
-                 SET result_files = ?, logs = ? 
+                 SET result_files = ?, logs = ?, status = "Processed"
                  WHERE submission_id = ?`,
                 [JSON.stringify(testOutput), stdout, submission.submission_id]
             );
