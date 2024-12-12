@@ -3,6 +3,7 @@ import db from './config/db.js';
 import multer from 'multer';
 import path from 'path';
 import cors from 'cors';
+import { ContainerEngine, ContainerImage } from '../libcontainer/build/index.js';
 
 const app = express();
 
@@ -140,7 +141,61 @@ app.get('/api/submissions/:id/details', async (req, res) => {
 });
 
 // Start submission processing
-    //needs to be implemented the container thingy
+app.post("/api/assignments/:id/execute", async (req, res) => {
+    try {
+        const [assignment] = await db.query('SELECT * FROM assignments WHERE assignment_id = ?', [req.params.id]);
+
+        const image = new ContainerImage(assignment[0].image_filepath);
+        await image.extract();
+
+        if (!await image.verify()) {
+            throw new Error("Invalid container image. Please verify your container image is of the correct format and then try again.");
+        }
+
+        const opts = {
+            cpus: assignment[0].vcpu_value,
+            mem: assignment[0].memory_value,
+        }
+
+        const [submissionList] = await db.query(`SELECT * FROM student_submissions WHERE assignment_id = ?`, [req.params.id]);
+        const engineList = [];
+
+        for (const submission of submissionList) {
+            const engineInstance = new ContainerEngine(opts, image, submission.submission_path);
+            await engineInstance.init();
+            engineList.push(engineInstance);
+        }
+
+        const outputs = await Promise.all(engineList.map(engine => engine.waitForOutput()));
+
+        for (let i = 0; i < engineList.length; i++) {
+            const submission = submissionList[i];
+            const engine = engineList[i];
+            const stdout = outputs[i];
+
+            const testOutput = await engine.getResults();
+            await engine.cleanup();
+
+            const [result] = await db.query(
+                `UPDATE student_submissions 
+                 SET result_files = ?, logs = ? 
+                 WHERE submission_id = ?`,
+                [JSON.stringify(testOutput), stdout, submission.submission_id]
+            );
+
+            if (result.affectedRows === 0) {
+                return res.status(500).json({ error: 'Failed to update submission data' });
+            }
+        }
+
+        await image.cleanup();
+
+        res.status(200).json({ status: "OK", message: "Updated database successfully." });
+    } catch (error) {
+        console.error(`Error executing submission: ${error}`);
+        res.status(500).json({ error: `Error executing submission: ${error}` });
+    }
+});
 
 // Download submission result file
 app.get('/api/submissions/:id/files/:filename', async (req, res) => {
