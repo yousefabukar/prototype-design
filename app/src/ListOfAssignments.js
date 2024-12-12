@@ -33,7 +33,7 @@ function ListOfAssignments() {
 
     if (showSubmissions && selectedAssignment) {
         return (
-            <SubmissionsList 
+            <SubmissionsList
                 assignmentId={selectedAssignment.assignment_id}
                 onBack={() => {
                     setShowSubmissions(false);
@@ -60,9 +60,9 @@ function ListOfAssignments() {
 
     return (
         <div>
-            <div style={{ 
+            <div style={{
                 display: 'flex',
-                justifyContent: 'space-between',      
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '20px'
             }}>
@@ -70,7 +70,7 @@ function ListOfAssignments() {
                     <h1>FNCS (Flexible New Code Submission)</h1>
                     <h2>Assignment List</h2>
                 </div>
-                <button 
+                <button
                     onClick={() => setShowAddForm(true)}
                     style={{
                         backgroundColor: '#4CAF50',
@@ -102,7 +102,7 @@ function ListOfAssignments() {
                                 <td>{assignment.module_name}</td>
                                 <td>{new Date(assignment.due_date).toLocaleDateString()}</td>
                                 <td>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             setSelectedAssignment(assignment);
                                             setShowSubmissions(true);
