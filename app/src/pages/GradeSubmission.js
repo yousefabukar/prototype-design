@@ -60,12 +60,51 @@ function GradeSubmission({ submissionId, onBack }) {
             <h2 className="text-xl font-semibold mb-6">Grade Submission - {submission.name}</h2>
 
             <div className="mb-8">
-                <h3 className="font-medium mb-2">Test Results</h3>
-                <pre className="bg-gray p-4 rounded" style={
-                    { filter: "invert(1)", backgroundColor: "white", padding: 10, borderRadius: 10 }
-                }>
-                    {submission.logs !== null ? submission.logs : 'No test results available'}
-                </pre>
+                <div class="test-results">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Test Number</th>
+                                <th>Status
+                                </th>
+                                <th>Weight</th>
+                            </tr>
+
+                            <tr>
+                                <td>1</td>
+                                <td>Passed</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Passed</td>
+                                <td>20</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Failed</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <th>Final Mark: 75%</th>
+                                <th>
+                                </th>
+                                <th></th>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Test Running Logs</th>
+                            </tr>
+                            <tr>
+                                <pre>{submission.logs !== null ? submission.logs : 'No test results available'}</pre>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div className="grading-section">
