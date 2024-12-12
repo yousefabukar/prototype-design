@@ -160,7 +160,7 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
         const [submissionList] = await db.query(`SELECT * FROM student_submissions WHERE assignment_id = ?`, [req.params.id]);
         const engineList = [];
 
-        for (const submission of submissionList[0]) {
+        for (const submission of submissionList) {
             const engineInstance = new ContainerEngine(opts, image, submission.submission_path);
             await engineInstance.init();
             engineList.push(engineInstance);
@@ -169,6 +169,7 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
         const outputs = await Promise.all(engineList.map(engine => engine.waitForOutput()));
 
         for (let i = 0; i < engineList.length; i++) {
+            const submission = submissionList[i];
             const engine = engineList[i];
             const stdout = outputs[i];
 
@@ -179,7 +180,7 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
                 `UPDATE student_submissions 
                  SET result_files = ?, logs = ? 
                  WHERE submission_id = ?`,
-                [JSON.stringify(testOutput), stdout, req.params.id]
+                [JSON.stringify(testOutput), stdout, submission.submission_id]
             );
 
             if (result.affectedRows === 0) {
