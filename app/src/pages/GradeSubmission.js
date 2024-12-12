@@ -73,7 +73,7 @@ function GradeSubmission({ submissionId, onBack }) {
                             {submission.result_files.map((test, index) => <tr>
                                 <td>{index}</td>
                                 <td>{test.passed ? 'Passed' : 'Failed'}</td>
-                                <td>{test.weight ? 'Passed' : 'Failed'}</td>
+                                <td>{test.weight}</td>
                             </tr>)}
 
                             <tr>
