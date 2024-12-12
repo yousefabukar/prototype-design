@@ -60,10 +60,47 @@ function GradeSubmission({ submissionId, onBack }) {
             <h2 className="text-xl font-semibold mb-6">Grade Submission - {submission.name}</h2>
 
             <div className="mb-8">
-                <h3 className="font-medium mb-2">Test Results</h3>
-                <pre className="bg-gray-100 p-4 rounded">
-                    {submission.result_files ? JSON.stringify(JSON.parse(submission.result_files), null, 2) : 'No test results available'}
-                </pre>
+                <div class="test-results">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Test Number</th>
+                                <th>Status
+                                </th>
+                                <th>Weight</th>
+                            </tr>
+
+                            {submission.result_files.map((test, index) => <tr>
+                                <td>{index}</td>
+                                <td>{test.passed ? 'Passed' : 'Failed'}</td>
+                                <td>{test.weight}</td>
+                            </tr>)}
+
+                            <tr>
+                                <th>Final Mark: {
+                                    submission.result_files.filter(i => i.passed).map(i => i.weight).reduce((a, b) => a + b)
+                                    / submission.result_files.map(i => i.weight).reduce((a, b) => a + b) * 100
+                                }%</th>
+                                <th>
+                                </th>
+                                <th></th>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>Test Running Logs</th>
+                            </tr>
+                            <tr>
+                                <pre style={{
+                                    padding: 20
+                                }}>{submission.logs !== null ? submission.logs : 'No test results available'}</pre>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div className="grading-section">
@@ -71,8 +108,8 @@ function GradeSubmission({ submissionId, onBack }) {
                 <div className="space-y-4">
                     <div>
                         <label className="block mb-2">Mark</label>
-                        <input 
-                            type="number" 
+                        <input
+                            type="number"
                             min="0"
                             max="100"
                             value={mark}
@@ -82,7 +119,7 @@ function GradeSubmission({ submissionId, onBack }) {
                     </div>
                     <div>
                         <label className="block mb-2">Feedback</label>
-                        <textarea 
+                        <textarea
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
                             placeholder="Enter feedback for the student..."
@@ -90,8 +127,8 @@ function GradeSubmission({ submissionId, onBack }) {
                         />
                     </div>
                     <div className="flex justify-center gap-2">
-                        <button 
-                            onClick={handleSubmit} 
+                        <button
+                            onClick={handleSubmit}
                             disabled={isSubmitting}
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                         >

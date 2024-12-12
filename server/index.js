@@ -118,16 +118,6 @@ app.get('/api/submissions/:id/details', async (req, res) => {
             return res.status(404).json({ error: 'Submission not found' });
         }
 
-        // Parse result_files JSON if it exists
-        if (submission[0].result_files) {
-            try {
-                submission[0].result_files = JSON.parse(submission[0].result_files);
-            } catch (error) {
-                console.error('Error parsing result_files JSON:', error);
-                submission[0].result_files = null;
-            }
-        }
-
         res.json(submission[0]);
     } catch (err) {
         console.error('Error fetching submission details:', err);
@@ -173,7 +163,7 @@ app.post("/api/assignments/:id/execute", async (req, res) => {
 
             const [result] = await db.query(
                 `UPDATE student_submissions 
-                 SET result_files = ?, logs = ? 
+                 SET result_files = ?, logs = ?, status = "Processed"
                  WHERE submission_id = ?`,
                 [JSON.stringify(testOutput), stdout, submission.submission_id]
             );

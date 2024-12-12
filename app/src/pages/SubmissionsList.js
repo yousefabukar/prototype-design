@@ -16,7 +16,7 @@ function SubmissionsList({ assignmentId, onBack }) {
 
             console.log('Fetching submissions for assignment:', assignmentId);
             const response = await fetch(`http://localhost:3000/api/assignments/${assignmentId}/submissions`);
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch submissions');
             }
@@ -38,22 +38,19 @@ function SubmissionsList({ assignmentId, onBack }) {
     const handleMarkAll = async () => {
         setIsProcessing(true);
         try {
-            const processPromises = submissions.map(sub => 
-                fetch(`http://localhost:3000/api/submissions/${sub.submission_id}/process`, {
-                    method: 'POST'
-                })
-            );
-            await Promise.all(processPromises);
-            await fetchSubmissions();
+            await fetch(`http://localhost:3000/api/assignments/${assignmentId}/execute`, {
+                method: 'POST'
+            });
         } catch (err) {
             console.error('Error processing submissions:', err);
         } finally {
             setIsProcessing(false);
+            await fetchSubmissions();
         }
     };
 
     if (selectedStudent) {
-        return <GradeSubmission 
+        return <GradeSubmission
             submissionId={selectedStudent.submission_id}
             onBack={() => {
                 setSelectedStudent(null);
@@ -71,7 +68,7 @@ function SubmissionsList({ assignmentId, onBack }) {
                 <h1>Student Submissions</h1>
                 <div>
                     <button onClick={onBack} style={{ marginRight: '10px' }}>Back</button>
-                    <button 
+                    <button
                         onClick={handleMarkAll}
                         disabled={isProcessing}
                         style={{
@@ -90,7 +87,6 @@ function SubmissionsList({ assignmentId, onBack }) {
                         <th>Submission ID</th>
                         <th>Name</th>
                         <th>Submission Date</th>
-                        <th>Tests Passed</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -101,18 +97,17 @@ function SubmissionsList({ assignmentId, onBack }) {
                             <td>{submission.submission_id}</td>
                             <td>{submission.name}</td>
                             <td>{new Date(submission.submission_date).toLocaleDateString()}</td>
-                            <td>{submission.tests_passed}</td>
                             <td>{submission.status}</td>
                             <td>
                                 {submission.status === "Processed" && (
-                                    <button 
+                                    <button
                                         onClick={() => setSelectedStudent(submission)}
                                         style={{
                                             backgroundColor: '#007bff',
                                             color: 'white'
                                         }}
                                     >
-                                        Mark
+                                        View
                                     </button>
                                 )}
                             </td>
