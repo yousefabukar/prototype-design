@@ -45,6 +45,7 @@ function SubmissionsList({ assignmentId, onBack }) {
             console.error('Error processing submissions:', err);
         } finally {
             setIsProcessing(false);
+            await fetchSubmissions();
         }
     };
 
