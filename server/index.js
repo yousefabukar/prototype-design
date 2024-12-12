@@ -93,12 +93,7 @@ app.get('/api/assignments/:id', async (req, res) => {
 app.get('/api/assignments/:assignmentId/submissions', async (req, res) => {
     try {
         const [submissions] = await db.query(`
-            SELECT 
-                submission_id,
-                name,
-                submission_date,
-                tests_passed,
-                status
+            SELECT *
             FROM student_submissions
             WHERE assignment_id = ?
             ORDER BY submission_date DESC`,
