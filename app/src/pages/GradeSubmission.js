@@ -70,23 +70,17 @@ function GradeSubmission({ submissionId, onBack }) {
                                 <th>Weight</th>
                             </tr>
 
+                            {submission.result_files.map((test, index) => <tr>
+                                <td>{index}</td>
+                                <td>{test.passed ? 'Passed' : 'Failed'}</td>
+                                <td>{test.weight ? 'Passed' : 'Failed'}</td>
+                            </tr>)}
+
                             <tr>
-                                <td>1</td>
-                                <td>Passed</td>
-                                <td>10</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Passed</td>
-                                <td>20</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Failed</td>
-                                <td>10</td>
-                            </tr>
-                            <tr>
-                                <th>Final Mark: 75%</th>
+                                <th>Final Mark: {
+                                    submission.result_files.filter(i => i.passed).map(i => i.weight).reduce((a, b) => a + b)
+                                    / submission.result_files.map(i => i.weight).reduce((a, b) => a + b) * 100
+                                }%</th>
                                 <th>
                                 </th>
                                 <th></th>
